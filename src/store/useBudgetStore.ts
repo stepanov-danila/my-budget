@@ -90,7 +90,6 @@ interface BudgetActions {
   removeCategory: (monthId: string, categoryId: string) => Category | null
   restoreCategory: (monthId: string, category: Category) => void
   setCategoryAmount: (monthId: string, categoryId: string, amount: number) => void
-  growCategorySliderMax: (monthId: string, categoryId: string) => void
 }
 
 export type BudgetStore = AppState & BudgetActions
@@ -192,19 +191,6 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
                 }
               : category,
           ),
-        ),
-      })),
-    }))
-  },
-
-  growCategorySliderMax: (monthId, categoryId) => {
-    set((state) => ({
-      months: withMonth(state.months, monthId, (month) => ({
-        ...month,
-        categories: month.categories.map((category) =>
-          category.id === categoryId
-            ? { ...category, sliderMax: nextSliderMax(category.sliderMax) }
-            : category,
         ),
       })),
     }))

@@ -22,17 +22,17 @@
 
 ## 4. Category management
 
-- [ ] 4.1 Build the Expenses/Income tab switch scoped to the active month and verify selecting a tab shows only that type's categories (per category-management spec: Expense/Income sections)
-- [ ] 4.2 Implement manual category creation (name input, zero starting amount) and verify the new category appears in the active month's list (per category-management spec: Manual category creation)
-- [ ] 4.3 Implement the default-category dropdown, filtered to exclude categories already in the active month, and verify selecting one adds it (per category-management spec: Selecting a default category, Default category already added)
-- [ ] 4.4 Implement amount-descending sort that recalculates on amount change or category addition and verify reordering and new-category insertion (per category-management spec: Reorder after amount change, New category insertion)
-- [ ] 4.5 Implement swipe-to-delete with an Undo toast (no confirmation dialog) and verify both the undo-restore and undo-expiry paths (per category-management spec: Delete then undo, Delete without undo)
+- [x] 4.1 Build the Expenses/Income tab switch scoped to the active month and verify selecting a tab shows only that type's categories (per category-management spec: Expense/Income sections)
+- [x] 4.2 Implement manual category creation (name input, zero starting amount) and verify the new category appears in the active month's list (per category-management spec: Manual category creation)
+- [x] 4.3 Implement the default-category dropdown, filtered to exclude categories already in the active month, and verify selecting one adds it (per category-management spec: Selecting a default category, Default category already added)
+- [x] 4.4 Implement amount-descending sort that recalculates on amount change or category addition and verify reordering and new-category insertion (per category-management spec: Reorder after amount change, New category insertion)
+- [x] 4.5 Implement swipe-to-delete with an Undo toast (no confirmation dialog) and verify both the undo-restore and undo-expiry paths (per category-management spec: Delete then undo, Delete without undo)
 
 ## 5. Amount entry
 
-- [ ] 5.1 Build the synced manual-input + slider control for a category's amount and verify editing either updates the other (per amount-entry spec: Manual entry updates slider, Slider updates field)
-- [ ] 5.2 Set the default slider range (0-50,000, step 100) for new categories and verify it on category creation (per amount-entry spec: Fresh category default range)
-- [ ] 5.3 Implement the adaptive slider maximum (`ceil((value + 1) / 50000) * 50000`) for both typed overflow and right-edge drag, and verify both paths (per amount-entry spec: Typed value exceeds max, Dragged to edge)
+- [x] 5.1 Build the synced manual-input + slider control for a category's amount and verify editing either updates the other (per amount-entry spec: Manual entry updates slider, Slider updates field)
+- [x] 5.2 Set the default slider range (0-50,000, step 100) for new categories and verify it on category creation (per amount-entry spec: Fresh category default range)
+- [x] 5.3 Implement the adaptive slider maximum (`ceil((value + 1) / 50000) * 50000`) for both typed overflow and right-edge drag, and verify both paths (per amount-entry spec: Typed value exceeds max, Dragged to edge)
 
 ## 6. Theme switching
 

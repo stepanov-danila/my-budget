@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { BalanceBar } from './components/BalanceBar'
+import { CategorySection } from './components/CategorySection'
 import { MonthTabs } from './components/MonthTabs'
 import { useBudgetStore } from './store/useBudgetStore'
 
@@ -14,6 +15,7 @@ function App() {
     <div className="min-h-svh bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <MonthTabs />
       <BalanceBar />
+      <CategorySection />
     </div>
   )
 }
