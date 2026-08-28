@@ -41,9 +41,9 @@
 
 ## 7. Category charts
 
-- [ ] 7.1 Add Recharts and build the category-breakdown chart for the active view (Expenses or Income) and verify it renders proportional shares (per category-charts spec: Viewing expense chart)
-- [ ] 7.2 Handle the empty-categories state with a placeholder instead of an empty chart and verify it (per category-charts spec: No categories yet)
-- [ ] 7.3 Verify the chart re-renders when categories are added, removed, or their amounts change (per category-charts spec: Chart reflects new category)
+- [x] 7.1 Add Recharts and build the category-breakdown chart for the active view (Expenses or Income) and verify it renders proportional shares (per category-charts spec: Viewing expense chart)
+- [x] 7.2 Handle the empty-categories state with a placeholder instead of an empty chart and verify it (per category-charts spec: No categories yet)
+- [x] 7.3 Verify the chart re-renders when categories are added, removed, or their amounts change (per category-charts spec: Chart reflects new category)
 
 ## 8. PWA shell
 

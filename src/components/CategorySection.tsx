@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useBudgetStore } from '../store/useBudgetStore'
 import type { Category, CategoryType } from '../types'
 import { AddCategoryMenu } from './AddCategoryMenu'
+import { CategoryChart } from './CategoryChart'
 import { CategoryRow } from './CategoryRow'
 import { CategoryTypeTabs } from './CategoryTypeTabs'
 import { UndoToast } from './UndoToast'
@@ -57,6 +58,10 @@ export function CategorySection() {
   return (
     <div className="pb-24">
       <CategoryTypeTabs value={activeType} onChange={setActiveType} />
+
+      <div className="mt-3">
+        <CategoryChart categories={visibleCategories} />
+      </div>
 
       <AddCategoryMenu
         monthId={activeMonthId}
