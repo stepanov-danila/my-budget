@@ -14,9 +14,23 @@ function sortCategories(categories: Category[]): Category[] {
   return [...categories].sort((a, b) => b.amount - a.amount)
 }
 
+const RUSSIAN_MONTH_NAMES = [
+  'Январь',
+  'Февраль',
+  'Март',
+  'Апрель',
+  'Май',
+  'Июнь',
+  'Июль',
+  'Август',
+  'Сентябрь',
+  'Октябрь',
+  'Ноябрь',
+  'Декабрь',
+]
+
 function monthLabel(date: Date): string {
-  const label = date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
-  return label.charAt(0).toUpperCase() + label.slice(1)
+  return `${RUSSIAN_MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`
 }
 
 function createMonthId(date: Date): string {
@@ -29,6 +43,20 @@ function createEmptyMonth(date: Date = new Date()): Month {
     label: monthLabel(date),
     categories: [],
   }
+}
+
+function parseMonthId(id: string): Date {
+  const [year, month] = id.split('-').map(Number)
+  return new Date(year, month - 1, 1)
+}
+
+/** The month chronologically after the latest existing month, or today if there are none yet. */
+function nextMonthDate(months: Month[]): Date {
+  if (months.length === 0) return new Date()
+
+  const latestId = months.reduce((latest, m) => (m.id > latest ? m.id : latest), months[0].id)
+  const latest = parseMonthId(latestId)
+  return new Date(latest.getFullYear(), latest.getMonth() + 1, 1)
 }
 
 function detectPreferredTheme(): Theme {
@@ -79,7 +107,7 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
 
   addMonth: (mode) => {
     const { months, activeMonthId } = get()
-    const newMonth = createEmptyMonth()
+    const newMonth = createEmptyMonth(nextMonthDate(months))
 
     if (mode === 'carry-over') {
       const previous = months.find((month) => month.id === activeMonthId) ?? months[0]

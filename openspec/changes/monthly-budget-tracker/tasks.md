@@ -14,11 +14,11 @@
 
 ## 3. Month management
 
-- [ ] 3.1 Build the month tabs bar with horizontal scroll/swipe and active-month selection, and verify switching tabs changes the displayed month (per month-management spec: Switching active month)
-- [ ] 3.2 Implement "add month" flow with empty-start and carry-over-from-previous options, and verify both scenarios (per month-management spec: Create empty month, Create month copied from previous)
-- [ ] 3.3 Implement "delete month" with a blocking confirmation dialog and no Undo, and verify both confirm and cancel paths (per month-management spec: Confirmed deletion, Cancelled deletion)
-- [ ] 3.4 Build the sticky balance bar (income, expense, difference) for the active month and verify it stays visible while the category list scrolls and updates immediately on data change (per month-management spec: Always-visible month balance)
-- [ ] 3.5 Verify multiple months can coexist, each independently editable/deletable (per month-management spec: Multiple months supported)
+- [x] 3.1 Build the month tabs bar with horizontal scroll/swipe and active-month selection, and verify switching tabs changes the displayed month (per month-management spec: Switching active month)
+- [x] 3.2 Implement "add month" flow with empty-start and carry-over-from-previous options, and verify both scenarios (per month-management spec: Create empty month, Create month copied from previous)
+- [x] 3.3 Implement "delete month" with a blocking confirmation dialog and no Undo, and verify both confirm and cancel paths (per month-management spec: Confirmed deletion, Cancelled deletion)
+- [x] 3.4 Build the sticky balance bar (income, expense, difference) for the active month and verify it stays visible while the category list scrolls and updates immediately on data change (per month-management spec: Always-visible month balance)
+- [x] 3.5 Verify multiple months can coexist, each independently editable/deletable (per month-management spec: Multiple months supported)
 
 ## 4. Category management
 
