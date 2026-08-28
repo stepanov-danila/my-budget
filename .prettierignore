@@ -1,0 +1,8 @@
+dist
+node_modules
+
+# Planning/docs content, not app source - not this tool's concern
+docs
+openspec
+.claude
+README.md
