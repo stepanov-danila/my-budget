@@ -36,8 +36,8 @@
 
 ## 6. Theme switching
 
-- [ ] 6.1 Build the light/dark theme toggle control and verify toggling switches the rendered color scheme (per theme-switching spec: Switching to dark, Switching to light)
-- [ ] 6.2 Persist the selected theme in the store and verify it is re-applied after a reload (per theme-switching spec: Reload after choosing dark)
+- [x] 6.1 Build the light/dark theme toggle control and verify toggling switches the rendered color scheme (per theme-switching spec: Switching to dark, Switching to light)
+- [x] 6.2 Persist the selected theme in the store and verify it is re-applied after a reload (per theme-switching spec: Reload after choosing dark)
 
 ## 7. Category charts
 
