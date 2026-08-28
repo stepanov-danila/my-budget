@@ -31,7 +31,9 @@ describe('default categories', () => {
   })
 
   it('has no duplicate names within each list', () => {
-    expect(new Set(DEFAULT_EXPENSE_CATEGORIES).size).toBe(DEFAULT_EXPENSE_CATEGORIES.length)
+    expect(new Set(DEFAULT_EXPENSE_CATEGORIES).size).toBe(
+      DEFAULT_EXPENSE_CATEGORIES.length,
+    )
     expect(new Set(DEFAULT_INCOME_CATEGORIES).size).toBe(DEFAULT_INCOME_CATEGORIES.length)
   })
 })

@@ -18,7 +18,7 @@ beforeEach(() => {
 })
 
 describe('category-management', () => {
-  it('shows only the active type\'s categories (Expense/Income sections)', async () => {
+  it("shows only the active type's categories (Expense/Income sections)", async () => {
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
     useBudgetStore.getState().addCategory('2026-08', 'income', 'Зарплата')
 
@@ -44,7 +44,11 @@ describe('category-management', () => {
 
     const month = useBudgetStore.getState().months[0]
     expect(month.categories).toHaveLength(1)
-    expect(month.categories[0]).toMatchObject({ name: 'Ипотека', amount: 0, type: 'expense' })
+    expect(month.categories[0]).toMatchObject({
+      name: 'Ипотека',
+      amount: 0,
+      type: 'expense',
+    })
     expect(screen.getByText('Ипотека')).toBeInTheDocument()
   })
 

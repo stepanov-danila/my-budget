@@ -32,9 +32,9 @@ describe('month-management', () => {
 
     const newTab = screen.getByRole('button', { name: 'Сентябрь 2026' })
     expect(newTab).toHaveAttribute('aria-current', 'true')
-    expect(useBudgetStore.getState().months.find((m) => m.id === '2026-09')?.categories).toEqual(
-      [],
-    )
+    expect(
+      useBudgetStore.getState().months.find((m) => m.id === '2026-09')?.categories,
+    ).toEqual([])
   })
 
   it('carries over categories and amounts from the previous month (Create month copied from previous)', async () => {
@@ -110,7 +110,10 @@ describe('month-management', () => {
     const dialog = screen.getByRole('alertdialog')
     await user.click(within(dialog).getByRole('button', { name: 'Отмена' }))
 
-    expect(useBudgetStore.getState().months.map((m) => m.id)).toEqual(['2026-07', '2026-08'])
+    expect(useBudgetStore.getState().months.map((m) => m.id)).toEqual([
+      '2026-07',
+      '2026-08',
+    ])
   })
 
   it('updates the balance immediately when a category amount changes', () => {

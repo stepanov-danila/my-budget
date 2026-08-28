@@ -1,5 +1,8 @@
 import { useId, useState } from 'react'
-import { DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from '../constants/categories'
+import {
+  DEFAULT_EXPENSE_CATEGORIES,
+  DEFAULT_INCOME_CATEGORIES,
+} from '../constants/categories'
 import { useBudgetStore } from '../store/useBudgetStore'
 import type { CategoryType } from '../types'
 
@@ -15,8 +18,11 @@ export function AddCategoryMenu({ monthId, type, existingNames }: AddCategoryMen
   const addCategory = useBudgetStore((state) => state.addCategory)
   const inputId = useId()
 
-  const defaults = type === 'expense' ? DEFAULT_EXPENSE_CATEGORIES : DEFAULT_INCOME_CATEGORIES
-  const availableDefaults = defaults.filter((defaultName) => !existingNames.includes(defaultName))
+  const defaults =
+    type === 'expense' ? DEFAULT_EXPENSE_CATEGORIES : DEFAULT_INCOME_CATEGORIES
+  const availableDefaults = defaults.filter(
+    (defaultName) => !existingNames.includes(defaultName),
+  )
 
   function close() {
     setOpen(false)

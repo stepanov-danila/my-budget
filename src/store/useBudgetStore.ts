@@ -54,7 +54,10 @@ function parseMonthId(id: string): Date {
 function nextMonthDate(months: Month[]): Date {
   if (months.length === 0) return new Date()
 
-  const latestId = months.reduce((latest, m) => (m.id > latest ? m.id : latest), months[0].id)
+  const latestId = months.reduce(
+    (latest, m) => (m.id > latest ? m.id : latest),
+    months[0].id,
+  )
   const latest = parseMonthId(latestId)
   return new Date(latest.getFullYear(), latest.getMonth() + 1, 1)
 }
@@ -76,7 +79,11 @@ function loadInitialState(): AppState {
   }
 }
 
-function withMonth(months: Month[], monthId: string, update: (month: Month) => Month): Month[] {
+function withMonth(
+  months: Month[],
+  monthId: string,
+  update: (month: Month) => Month,
+): Month[] {
   return months.map((month) => (month.id === monthId ? update(month) : month))
 }
 
@@ -198,5 +205,9 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
 }))
 
 useBudgetStore.subscribe((state) => {
-  saveState({ theme: state.theme, activeMonthId: state.activeMonthId, months: state.months })
+  saveState({
+    theme: state.theme,
+    activeMonthId: state.activeMonthId,
+    months: state.months,
+  })
 })

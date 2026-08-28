@@ -45,11 +45,14 @@ describe('useBudgetStore', () => {
     store.addCategory(monthId, 'expense', 'Продукты')
     store.addCategory(monthId, 'expense', 'Транспорт')
 
-    const [first, second] = useBudgetStore.getState().months.find((m) => m.id === monthId)!
-      .categories
+    const [first, second] = useBudgetStore
+      .getState()
+      .months.find((m) => m.id === monthId)!.categories
     useBudgetStore.getState().setCategoryAmount(monthId, second.id, 5000)
 
-    const sorted = useBudgetStore.getState().months.find((m) => m.id === monthId)!.categories
+    const sorted = useBudgetStore
+      .getState()
+      .months.find((m) => m.id === monthId)!.categories
     expect(sorted[0].id).toBe(second.id)
     expect(sorted[0].amount).toBe(5000)
     expect(sorted[1].id).toBe(first.id)

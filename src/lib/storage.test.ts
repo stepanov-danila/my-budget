@@ -10,7 +10,13 @@ const sampleState: AppState = {
       id: 'month-1',
       label: 'Август 2026',
       categories: [
-        { id: 'cat-1', type: 'expense', name: 'Продукты', amount: 12400, sliderMax: 50000 },
+        {
+          id: 'cat-1',
+          type: 'expense',
+          name: 'Продукты',
+          amount: 12400,
+          sliderMax: 50000,
+        },
       ],
     },
   ],

@@ -49,7 +49,13 @@ export function CategoryChart({ categories }: CategoryChartProps) {
     <div data-testid="category-chart" className="mx-4 h-52">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" innerRadius="55%" outerRadius="85%">
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            innerRadius="55%"
+            outerRadius="85%"
+          >
             {data.map((entry, index) => (
               <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
             ))}

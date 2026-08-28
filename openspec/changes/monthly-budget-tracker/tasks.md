@@ -47,8 +47,8 @@
 
 ## 8. PWA shell
 
-- [ ] 8.1 Configure the web app manifest (name, icons incl. maskable, theme/background colors, standalone display) and verify the app is installable from a mobile browser (per pwa-shell spec: Installing the app)
-- [ ] 8.2 Verify the service worker caches static assets and the installed app loads and remains usable with the network disabled (per pwa-shell spec: Offline availability)
+- [x] 8.1 Configure the web app manifest (name, icons incl. maskable, theme/background colors, standalone display) and verify the app is installable from a mobile browser (per pwa-shell spec: Installing the app)
+- [x] 8.2 Verify the service worker caches static assets and the installed app loads and remains usable with the network disabled (per pwa-shell spec: Offline availability)
 
 ## 9. Final verification
 

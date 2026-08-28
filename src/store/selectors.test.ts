@@ -13,7 +13,11 @@ function makeMonth(overrides: Partial<Month> = {}): Month {
 
 describe('computeMonthTotals', () => {
   it('returns zeros for an undefined month', () => {
-    expect(computeMonthTotals(undefined)).toEqual({ income: 0, expense: 0, difference: 0 })
+    expect(computeMonthTotals(undefined)).toEqual({
+      income: 0,
+      expense: 0,
+      difference: 0,
+    })
   })
 
   it('sums income and expense categories separately', () => {

@@ -17,7 +17,8 @@ interface PendingUndo {
 export function CategorySection() {
   const activeMonthId = useBudgetStore((state) => state.activeMonthId)
   const categories = useBudgetStore(
-    (state) => state.months.find((month) => month.id === state.activeMonthId)?.categories ?? [],
+    (state) =>
+      state.months.find((month) => month.id === state.activeMonthId)?.categories ?? [],
   )
   const removeCategory = useBudgetStore((state) => state.removeCategory)
   const restoreCategory = useBudgetStore((state) => state.restoreCategory)

@@ -30,8 +30,9 @@ export function BalanceBar() {
         {currencyFormatter.format(difference)}
       </p>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Доход <span data-testid="balance-income">{currencyFormatter.format(income)}</span> /
-        Расход <span data-testid="balance-expense">{currencyFormatter.format(expense)}</span>
+        Доход <span data-testid="balance-income">{currencyFormatter.format(income)}</span>{' '}
+        / Расход{' '}
+        <span data-testid="balance-expense">{currencyFormatter.format(expense)}</span>
       </p>
     </div>
   )
