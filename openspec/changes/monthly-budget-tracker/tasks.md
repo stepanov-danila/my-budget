@@ -1,9 +1,9 @@
 ## 1. Project setup
 
-- [ ] 1.1 Scaffold a React + TypeScript + Vite app in the repo root and verify `npm run dev` serves a blank page
-- [ ] 1.2 Add Tailwind CSS (mobile-first config, `dark` class strategy) and verify a Tailwind utility class renders correctly in the dev server
-- [ ] 1.3 Add `vite-plugin-pwa` with `registerType: "autoUpdate"` and verify `npm run build` emits a manifest and service worker in the build output
-- [ ] 1.4 Add lint/format tooling (ESLint + Prettier or the project's preferred equivalent) and verify `npm run lint` passes on the scaffold
+- [x] 1.1 Scaffold a React + TypeScript + Vite app in the repo root and verify `npm run dev` serves a blank page
+- [x] 1.2 Add Tailwind CSS (mobile-first config, `dark` class strategy) and verify a Tailwind utility class renders correctly in the dev server
+- [x] 1.3 Add `vite-plugin-pwa` with `registerType: "autoUpdate"` and verify `npm run build` emits a manifest and service worker in the build output
+- [x] 1.4 Add lint/format tooling (ESLint + Prettier or the project's preferred equivalent) and verify `npm run lint` passes on the scaffold
 
 ## 2. Data layer
 
