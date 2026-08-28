@@ -17,12 +17,19 @@ interface CategoryRowProps {
 
 const SWIPE_DELETE_THRESHOLD = 72
 
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && target.closest('button, input, a') !== null
+}
+
 export function CategoryRow({ monthId, category, onDelete }: CategoryRowProps) {
   const setCategoryAmount = useBudgetStore((state) => state.setCategoryAmount)
   const [dragX, setDragX] = useState(0)
   const startX = useRef<number | null>(null)
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    // Let the delete button and amount inputs handle their own pointer/click
+    // interactions instead of starting a row-level swipe over them.
+    if (isInteractiveTarget(event.target)) return
     startX.current = event.clientX
     event.currentTarget.setPointerCapture?.(event.pointerId)
   }

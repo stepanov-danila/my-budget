@@ -52,5 +52,5 @@
 
 ## 9. Final verification
 
-- [ ] 9.1 Manually test the full flow end-to-end on a mobile viewport (or device emulation): create months, add/sort/delete categories, edit amounts via both input modes, toggle theme, view charts, install as PWA, and go offline
-- [ ] 9.2 Run `openspec validate --change "monthly-budget-tracker" --strict` and verify it passes with no errors
+- [x] 9.1 Manually test the full flow end-to-end on a mobile viewport (or device emulation): create months, add/sort/delete categories, edit amounts via both input modes, toggle theme, view charts, install as PWA, and go offline
+- [x] 9.2 Run `openspec validate --change "monthly-budget-tracker" --strict` and verify it passes with no errors
