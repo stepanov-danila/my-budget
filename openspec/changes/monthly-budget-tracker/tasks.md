@@ -7,10 +7,10 @@
 
 ## 2. Data layer
 
-- [ ] 2.1 Define TypeScript types for `AppState`, `Month`, and `Category` per design.md's data model and verify the project type-checks
-- [ ] 2.2 Implement the `localStorage`-backed store (versioned key `my-budget:v1`) with read/write helpers and verify a unit test round-trips state through save/load
-- [ ] 2.3 Add the static default category constants (Expenses and Income lists from docs/spec.md) and verify a unit test asserts both lists' contents
-- [ ] 2.4 Wire the store as the single source of app state (e.g. Zustand store or context+reducer) and verify a smoke test reads and updates state through it
+- [x] 2.1 Define TypeScript types for `AppState`, `Month`, and `Category` per design.md's data model and verify the project type-checks
+- [x] 2.2 Implement the `localStorage`-backed store (versioned key `my-budget:v1`) with read/write helpers and verify a unit test round-trips state through save/load
+- [x] 2.3 Add the static default category constants (Expenses and Income lists from docs/spec.md) and verify a unit test asserts both lists' contents
+- [x] 2.4 Wire the store as the single source of app state (e.g. Zustand store or context+reducer) and verify a smoke test reads and updates state through it
 
 ## 3. Month management
 
