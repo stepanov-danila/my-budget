@@ -65,7 +65,9 @@ try {
     .locator('ul[aria-label="Список категорий"] li')
     .allTextContents()
   assert(rowNames[0].includes('Ипотека'), 'the higher-amount category should sort first')
-  console.log('✓ Categories are sorted by amount descending on blur (Ипотека above Продукты)')
+  console.log(
+    '✓ Categories are sorted by amount descending on blur (Ипотека above Продукты)',
+  )
 
   const balance = await page.getByTestId('balance-difference').textContent()
   assert(

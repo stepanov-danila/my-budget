@@ -92,4 +92,54 @@ describe('amount-entry', () => {
 
     expect(getCategory().sliderMax).toBe(100000)
   })
+
+  it('grows the slider maximum at most once per continuous drag gesture (Growth does not cascade within one drag)', () => {
+    render(<App />)
+    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
+
+    fireEvent.pointerDown(slider)
+    fireEvent.change(slider, { target: { value: '50000' } })
+    expect(getCategory().sliderMax).toBe(100000)
+
+    // Simulate the browser re-evaluating the thumb position against the
+    // newly-grown range and landing exactly on the new max again, still
+    // within the same drag gesture (pointer not yet released).
+    fireEvent.change(slider, { target: { value: '100000' } })
+    expect(getCategory().sliderMax).toBe(100000)
+    expect(getCategory().amount).toBe(99999)
+
+    fireEvent.pointerUp(slider)
+  })
+
+  it('increments the amount by one step via the + button (Increment button)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByLabelText('Увеличить сумму'))
+
+    expect(getCategory().amount).toBe(1000)
+    const numberField = screen.getByLabelText('Сумма, вручную') as HTMLInputElement
+    expect(numberField.value).toBe('1000')
+  })
+
+  it('decrements the amount by one step via the - button (Decrement button)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const categoryId = getCategory().id
+    useBudgetStore.getState().setCategoryAmount('2026-08', categoryId, 5000)
+
+    await user.click(screen.getByLabelText('Уменьшить сумму'))
+
+    expect(getCategory().amount).toBe(4000)
+  })
+
+  it('does not decrement the amount below zero (Decrement does not go below zero)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByLabelText('Уменьшить сумму'))
+
+    expect(getCategory().amount).toBe(0)
+  })
 })
