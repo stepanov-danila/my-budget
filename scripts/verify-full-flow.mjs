@@ -51,11 +51,21 @@ try {
   await sliders.nth(1).fill('12000')
   console.log('✓ Added "Ипотека" manually and set its amount via the slider to 12000')
 
+  const rowNamesBeforeBlur = await page
+    .locator('ul[aria-label="Список категорий"] li')
+    .allTextContents()
+  assert(
+    rowNamesBeforeBlur[1].includes('Ипотека'),
+    'list should not reorder while the field is still focused',
+  )
+  console.log('✓ List order is stable while the amount field is still focused')
+
+  await sliders.nth(1).blur()
   const rowNames = await page
     .locator('ul[aria-label="Список категорий"] li')
     .allTextContents()
   assert(rowNames[0].includes('Ипотека'), 'the higher-amount category should sort first')
-  console.log('✓ Categories are sorted by amount descending (Ипотека above Продукты)')
+  console.log('✓ Categories are sorted by amount descending on blur (Ипотека above Продукты)')
 
   const balance = await page.getByTestId('balance-difference').textContent()
   assert(

@@ -74,7 +74,28 @@ describe('category-management', () => {
     expect(screen.getByRole('option', { name: 'Транспорт' })).toBeInTheDocument()
   })
 
-  it('reorders categories when an amount edit makes one exceed another (Reorder after amount change)', async () => {
+  it('does not reorder while the amount field is still focused (No reorder while a field is still focused)', async () => {
+    useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
+    useBudgetStore.getState().addCategory('2026-08', 'expense', 'Транспорт')
+    const [products, transport] = useBudgetStore.getState().months[0].categories
+
+    const user = userEvent.setup()
+    render(<App />)
+
+    const categoryList = screen.getByRole('list', { name: 'Список категорий' })
+    const rows = within(categoryList).getAllByRole('listitem')
+    const transportRow = rows[1]
+    const numberInput = within(transportRow).getByLabelText('Сумма, вручную')
+    await user.clear(numberInput)
+    await user.type(numberInput, '5000')
+
+    const stillUnsorted = useBudgetStore.getState().months[0].categories
+    expect(stillUnsorted[0].id).toBe(products.id)
+    expect(stillUnsorted[1].id).toBe(transport.id)
+    expect(stillUnsorted[1].amount).toBe(5000)
+  })
+
+  it('reorders categories once the amount edit is committed (Reorder after amount change)', async () => {
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Транспорт')
     const [products, transport] = useBudgetStore.getState().months[0].categories
@@ -90,6 +111,7 @@ describe('category-management', () => {
     const numberInput = within(transportRow).getByLabelText('Сумма, вручную')
     await user.clear(numberInput)
     await user.type(numberInput, '5000')
+    await user.tab()
 
     const sorted = useBudgetStore.getState().months[0].categories
     expect(sorted[0].id).toBe(transport.id)

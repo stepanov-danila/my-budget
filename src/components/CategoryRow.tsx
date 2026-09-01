@@ -23,6 +23,7 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 
 export function CategoryRow({ monthId, category, onDelete }: CategoryRowProps) {
   const setCategoryAmount = useBudgetStore((state) => state.setCategoryAmount)
+  const resortCategories = useBudgetStore((state) => state.resortCategories)
   const [dragX, setDragX] = useState(0)
   const startX = useRef<number | null>(null)
 
@@ -74,6 +75,7 @@ export function CategoryRow({ monthId, category, onDelete }: CategoryRowProps) {
               value={category.amount}
               sliderMax={category.sliderMax}
               onChange={(amount) => setCategoryAmount(monthId, category.id, amount)}
+              onBlur={() => resortCategories(monthId)}
             />
           </div>
         </div>

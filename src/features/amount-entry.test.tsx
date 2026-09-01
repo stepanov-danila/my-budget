@@ -28,7 +28,7 @@ describe('amount-entry', () => {
     const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
     expect(slider.min).toBe('0')
     expect(slider.max).toBe('50000')
-    expect(slider.step).toBe('100')
+    expect(slider.step).toBe('1000')
   })
 
   it('updates the slider when the manual field is edited (Manual entry updates slider)', async () => {
@@ -55,13 +55,27 @@ describe('amount-entry', () => {
     expect(getCategory().amount).toBe(15000)
   })
 
-  it('grows the slider maximum when a typed value exceeds it (Typed value exceeds max)', async () => {
+  it('does not grow the slider maximum when a typed value exceeds it without matching exactly (Typed value exceeds max)', async () => {
     const user = userEvent.setup()
     render(<App />)
 
     const numberField = screen.getByLabelText('Сумма, вручную')
     await user.clear(numberField)
     await user.type(numberField, '52000')
+
+    expect(getCategory().amount).toBe(52000)
+    expect(getCategory().sliderMax).toBe(50000)
+    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
+    expect(slider.max).toBe('50000')
+  })
+
+  it('grows the slider maximum when a typed value exactly matches it (Typed value exactly matches the max)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const numberField = screen.getByLabelText('Сумма, вручную')
+    await user.clear(numberField)
+    await user.type(numberField, '50000')
 
     expect(getCategory().sliderMax).toBe(100000)
     const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement

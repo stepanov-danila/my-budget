@@ -4,11 +4,12 @@ interface AmountInputProps {
   value: number
   sliderMax: number
   onChange: (value: number) => void
+  onBlur?: () => void
 }
 
-const SLIDER_STEP = 100
+const SLIDER_STEP = 1000
 
-export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
+export function AmountInput({ value, sliderMax, onChange, onBlur }: AmountInputProps) {
   const id = useId()
 
   function handleSliderChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -30,6 +31,7 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
         step={SLIDER_STEP}
         value={Math.min(value, sliderMax)}
         onChange={handleSliderChange}
+        onBlur={onBlur}
         aria-label="Сумма, слайдер"
         className="h-2 flex-1 accent-blue-600"
       />
@@ -40,6 +42,7 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
         step={SLIDER_STEP}
         value={value}
         onChange={handleNumberChange}
+        onBlur={onBlur}
         aria-label="Сумма, вручную"
         className="w-24 rounded-lg border border-slate-300 px-2 py-1 text-right text-sm dark:border-slate-600 dark:bg-slate-800"
       />
