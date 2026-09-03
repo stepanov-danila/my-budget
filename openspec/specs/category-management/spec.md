@@ -3,8 +3,8 @@
 ## Purpose
 
 Lets the user maintain, per month, the list of expense and income
-categories - adding them manually or from a default list, keeping them
-sorted by amount, and removing them safely with an Undo window.
+categories - adding them manually or from a default list, keeping their
+order stable, and removing them safely with an Undo window.
 
 ## Requirements
 
@@ -36,24 +36,6 @@ Expenses or Income, that the user can pick from to add to the active month.
 - **WHEN** the user opens the default category dropdown for the active month
 - **THEN** categories already present in that month's list are not offered again
 
-### Requirement: Categories sorted by amount
-The system SHALL keep categories sorted by amount in descending order. The
-order recalculates when a category is added, and when an in-progress amount
-edit is committed (the amount field loses focus) - not on every
-intermediate keystroke or slider-drag tick while the field is focused.
-
-#### Scenario: Reorder after amount change
-- **WHEN** a category's amount is edited to exceed another category's amount and the amount field then loses focus
-- **THEN** the edited category moves above the other category in the list
-
-#### Scenario: No reorder while a field is still focused
-- **WHEN** a category's amount is being edited and the field is still focused, even though the new value would change its sort position
-- **THEN** the category stays in its current list position until the field loses focus
-
-#### Scenario: New category insertion
-- **WHEN** a new category is added
-- **THEN** it is inserted into the list at the position matching its current amount
-
 ### Requirement: Delete category with Undo
 The system SHALL let the user remove a category via a quick action, without
 a confirmation dialog, and offer an Undo option for a short time after
@@ -66,3 +48,21 @@ removal.
 #### Scenario: Delete without undo
 - **WHEN** the user removes a category and the Undo window expires without action
 - **THEN** the category remains permanently removed from the active month
+
+### Requirement: Category list order
+The system SHALL keep categories in a stable order that does not change
+when an amount is edited. A new category is appended after the existing
+ones. Removing a category and then restoring it via Undo SHALL put it back
+at the exact position it occupied before removal.
+
+#### Scenario: New category appended
+- **WHEN** a new category is added
+- **THEN** it appears after all existing categories of the same type, regardless of its amount
+
+#### Scenario: Amount change does not reorder
+- **WHEN** a category's amount is edited to exceed another category's amount
+- **THEN** the list order is unchanged
+
+#### Scenario: Undo restores original position
+- **WHEN** a category is removed and then restored via Undo
+- **THEN** it reappears at the same position in the list it occupied before removal, not at the end
