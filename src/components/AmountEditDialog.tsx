@@ -17,7 +17,7 @@ export function AmountEditDialog({
 }: AmountEditDialogProps) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       onClick={onClose}
     >
       <div
@@ -41,7 +41,7 @@ export function AmountEditDialog({
         <button
           type="button"
           onClick={onClose}
-          className="mt-5 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white"
+          className="mt-5 w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white"
         >
           Готово
         </button>
