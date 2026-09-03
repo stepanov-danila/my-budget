@@ -10,10 +10,6 @@ function nextSliderMax(amount: number): number {
   return Math.ceil((amount + 1) / SLIDER_STEP) * SLIDER_STEP
 }
 
-function sortCategories(categories: Category[]): Category[] {
-  return [...categories].sort((a, b) => b.amount - a.amount)
-}
-
 const RUSSIAN_MONTH_NAMES = [
   'Январь',
   'Февраль',
@@ -94,10 +90,12 @@ interface BudgetActions {
   addMonth: (mode: 'empty' | 'carry-over') => void
   deleteMonth: (monthId: string) => void
   addCategory: (monthId: string, type: CategoryType, name: string) => void
-  removeCategory: (monthId: string, categoryId: string) => Category | null
-  restoreCategory: (monthId: string, category: Category) => void
+  removeCategory: (
+    monthId: string,
+    categoryId: string,
+  ) => { category: Category; index: number } | null
+  restoreCategory: (monthId: string, category: Category, index: number) => void
   setCategoryAmount: (monthId: string, categoryId: string, amount: number) => void
-  resortCategories: (monthId: string) => void
 }
 
 export type BudgetStore = AppState & BudgetActions
@@ -145,7 +143,7 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
     set((state) => ({
       months: withMonth(state.months, monthId, (month) => ({
         ...month,
-        categories: sortCategories([
+        categories: [
           ...month.categories,
           {
             id: crypto.randomUUID(),
@@ -154,14 +152,15 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
             amount: 0,
             sliderMax: DEFAULT_SLIDER_MAX,
           },
-        ]),
+        ],
       })),
     }))
   },
 
   removeCategory: (monthId, categoryId) => {
     const month = get().months.find((m) => m.id === monthId)
-    const removed = month?.categories.find((c) => c.id === categoryId) ?? null
+    const index = month?.categories.findIndex((c) => c.id === categoryId) ?? -1
+    const removed = index >= 0 ? (month?.categories[index] ?? null) : null
 
     set((state) => ({
       months: withMonth(state.months, monthId, (m) => ({
@@ -170,15 +169,16 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
       })),
     }))
 
-    return removed
+    return removed ? { category: removed, index } : null
   },
 
-  restoreCategory: (monthId, category) => {
+  restoreCategory: (monthId, category, index) => {
     set((state) => ({
-      months: withMonth(state.months, monthId, (month) => ({
-        ...month,
-        categories: sortCategories([...month.categories, category]),
-      })),
+      months: withMonth(state.months, monthId, (month) => {
+        const categories = [...month.categories]
+        categories.splice(Math.min(index, categories.length), 0, category)
+        return { ...month, categories }
+      }),
     }))
   },
 
@@ -198,15 +198,6 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
               }
             : category,
         ),
-      })),
-    }))
-  },
-
-  resortCategories: (monthId) => {
-    set((state) => ({
-      months: withMonth(state.months, monthId, (month) => ({
-        ...month,
-        categories: sortCategories(month.categories),
       })),
     }))
   },

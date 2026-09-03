@@ -27,7 +27,7 @@ describe('useBudgetStore', () => {
     expect(useBudgetStore.getState().theme).toBe('light')
   })
 
-  it('adds a category to the active month, sorted, and persists the change', () => {
+  it('adds a category to the active month, appended, and persists the change', () => {
     const monthId = useBudgetStore.getState().activeMonthId!
     useBudgetStore.getState().addCategory(monthId, 'expense', 'Продукты')
 
@@ -39,7 +39,7 @@ describe('useBudgetStore', () => {
     expect(localStorage.getItem(STORAGE_KEY)).not.toBeNull()
   })
 
-  it('updates a category amount without reordering, until resortCategories is called', () => {
+  it('appends new categories after existing ones and never reorders by amount', () => {
     const monthId = useBudgetStore.getState().activeMonthId!
     const store = useBudgetStore.getState()
     store.addCategory(monthId, 'expense', 'Продукты')
@@ -50,21 +50,47 @@ describe('useBudgetStore', () => {
       .months.find((m) => m.id === monthId)!.categories
     useBudgetStore.getState().setCategoryAmount(monthId, second.id, 5000)
 
-    const stillUnsorted = useBudgetStore
+    const afterAmountChange = useBudgetStore
       .getState()
       .months.find((m) => m.id === monthId)!.categories
-    expect(stillUnsorted[0].id).toBe(first.id)
-    expect(stillUnsorted[1].id).toBe(second.id)
-    expect(stillUnsorted[1].amount).toBe(5000)
+    expect(afterAmountChange[0].id).toBe(first.id)
+    expect(afterAmountChange[1].id).toBe(second.id)
+    expect(afterAmountChange[1].amount).toBe(5000)
 
-    useBudgetStore.getState().resortCategories(monthId)
-
-    const sorted = useBudgetStore
+    useBudgetStore.getState().addCategory(monthId, 'expense', 'Ипотека')
+    const afterAdd = useBudgetStore
       .getState()
       .months.find((m) => m.id === monthId)!.categories
-    expect(sorted[0].id).toBe(second.id)
-    expect(sorted[0].amount).toBe(5000)
-    expect(sorted[1].id).toBe(first.id)
+    expect(afterAdd.map((c) => c.name)).toEqual(['Продукты', 'Транспорт', 'Ипотека'])
+  })
+
+  it('restores a removed category to its original position on Undo', () => {
+    const monthId = useBudgetStore.getState().activeMonthId!
+    const store = useBudgetStore.getState()
+    store.addCategory(monthId, 'expense', 'Продукты')
+    store.addCategory(monthId, 'expense', 'Транспорт')
+    store.addCategory(monthId, 'expense', 'Ипотека')
+
+    const [, transport] = useBudgetStore
+      .getState()
+      .months.find((m) => m.id === monthId)!.categories
+
+    const removed = useBudgetStore.getState().removeCategory(monthId, transport.id)
+    expect(removed).not.toBeNull()
+    expect(removed!.category.id).toBe(transport.id)
+    expect(removed!.index).toBe(1)
+
+    const afterRemoval = useBudgetStore
+      .getState()
+      .months.find((m) => m.id === monthId)!.categories
+    expect(afterRemoval.map((c) => c.name)).toEqual(['Продукты', 'Ипотека'])
+
+    useBudgetStore.getState().restoreCategory(monthId, removed!.category, removed!.index)
+
+    const afterRestore = useBudgetStore
+      .getState()
+      .months.find((m) => m.id === monthId)!.categories
+    expect(afterRestore.map((c) => c.name)).toEqual(['Продукты', 'Транспорт', 'Ипотека'])
   })
 
   it('grows a category slider max only when the amount exactly matches it', () => {

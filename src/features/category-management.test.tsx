@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
@@ -74,7 +74,7 @@ describe('category-management', () => {
     expect(screen.getByRole('option', { name: 'Транспорт' })).toBeInTheDocument()
   })
 
-  it('does not reorder while the amount field is still focused (No reorder while a field is still focused)', async () => {
+  it('does not reorder the list when an amount is edited (Amount change does not reorder)', async () => {
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Транспорт')
     const [products, transport] = useBudgetStore.getState().months[0].categories
@@ -82,43 +82,18 @@ describe('category-management', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    const categoryList = screen.getByRole('list', { name: 'Список категорий' })
-    const rows = within(categoryList).getAllByRole('listitem')
-    const transportRow = rows[1]
-    const numberInput = within(transportRow).getByLabelText('Сумма, вручную')
+    await user.click(screen.getByLabelText(`Изменить сумму категории ${transport.name}`))
+    const numberInput = screen.getByLabelText('Сумма, вручную')
     await user.clear(numberInput)
     await user.type(numberInput, '5000')
 
-    const stillUnsorted = useBudgetStore.getState().months[0].categories
-    expect(stillUnsorted[0].id).toBe(products.id)
-    expect(stillUnsorted[1].id).toBe(transport.id)
-    expect(stillUnsorted[1].amount).toBe(5000)
+    const stillInOrder = useBudgetStore.getState().months[0].categories
+    expect(stillInOrder[0].id).toBe(products.id)
+    expect(stillInOrder[1].id).toBe(transport.id)
+    expect(stillInOrder[1].amount).toBe(5000)
   })
 
-  it('reorders categories once the amount edit is committed (Reorder after amount change)', async () => {
-    useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
-    useBudgetStore.getState().addCategory('2026-08', 'expense', 'Транспорт')
-    const [products, transport] = useBudgetStore.getState().months[0].categories
-
-    const user = userEvent.setup()
-    render(<App />)
-
-    const categoryList = screen.getByRole('list', { name: 'Список категорий' })
-    const rows = within(categoryList).getAllByRole('listitem')
-    expect(within(rows[0]).getByText('Продукты')).toBeInTheDocument()
-
-    const transportRow = rows[1]
-    const numberInput = within(transportRow).getByLabelText('Сумма, вручную')
-    await user.clear(numberInput)
-    await user.type(numberInput, '5000')
-    await user.tab()
-
-    const sorted = useBudgetStore.getState().months[0].categories
-    expect(sorted[0].id).toBe(transport.id)
-    expect(sorted[1].id).toBe(products.id)
-  })
-
-  it('inserts a newly added category at the sorted position matching its amount (New category insertion)', () => {
+  it('appends a newly added category after existing ones, regardless of amount (New category appended)', () => {
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
     const productsId = useBudgetStore.getState().months[0].categories[0].id
     useBudgetStore.getState().setCategoryAmount('2026-08', productsId, 5000)
@@ -129,21 +104,25 @@ describe('category-management', () => {
     expect(names).toEqual(['Продукты', 'Транспорт'])
   })
 
-  it('removes a category and restores it on Undo (Delete then undo)', async () => {
+  it('removes a category and restores it to its original position on Undo (Delete then undo)', async () => {
     useBudgetStore.getState().addCategory('2026-08', 'expense', 'Продукты')
+    useBudgetStore.getState().addCategory('2026-08', 'expense', 'Транспорт')
 
     const user = userEvent.setup()
     render(<App />)
 
     await user.click(screen.getByLabelText('Удалить категорию Продукты'))
 
-    expect(useBudgetStore.getState().months[0].categories).toHaveLength(0)
+    expect(useBudgetStore.getState().months[0].categories.map((c) => c.name)).toEqual([
+      'Транспорт',
+    ])
     expect(screen.getByText('Категория «Продукты» удалена')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Отменить' }))
 
     expect(useBudgetStore.getState().months[0].categories.map((c) => c.name)).toEqual([
       'Продукты',
+      'Транспорт',
     ])
   })
 

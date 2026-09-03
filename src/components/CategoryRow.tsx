@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { useBudgetStore } from '../store/useBudgetStore'
 import type { Category } from '../types'
-import { AmountInput } from './AmountInput'
+import { AmountEditDialog } from './AmountEditDialog'
 
 const currencyFormatter = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -23,12 +23,12 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 
 export function CategoryRow({ monthId, category, onDelete }: CategoryRowProps) {
   const setCategoryAmount = useBudgetStore((state) => state.setCategoryAmount)
-  const resortCategories = useBudgetStore((state) => state.resortCategories)
   const [dragX, setDragX] = useState(0)
+  const [isEditingAmount, setIsEditingAmount] = useState(false)
   const startX = useRef<number | null>(null)
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    // Let the delete button and amount inputs handle their own pointer/click
+    // Let the delete button and amount button handle their own pointer/click
     // interactions instead of starting a row-level swipe over them.
     if (isInteractiveTarget(event.target)) return
     startX.current = event.clientX
@@ -66,17 +66,14 @@ export function CategoryRow({ monthId, category, onDelete }: CategoryRowProps) {
             <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
               {category.name}
             </p>
-            <p className="shrink-0 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <button
+              type="button"
+              onClick={() => setIsEditingAmount(true)}
+              aria-label={`Изменить сумму категории ${category.name}`}
+              className="shrink-0 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
               {currencyFormatter.format(category.amount)}
-            </p>
-          </div>
-          <div className="mt-2">
-            <AmountInput
-              value={category.amount}
-              sliderMax={category.sliderMax}
-              onChange={(amount) => setCategoryAmount(monthId, category.id, amount)}
-              onBlur={() => resortCategories(monthId)}
-            />
+            </button>
           </div>
         </div>
         <button
@@ -88,6 +85,16 @@ export function CategoryRow({ monthId, category, onDelete }: CategoryRowProps) {
           ✕
         </button>
       </div>
+
+      {isEditingAmount && (
+        <AmountEditDialog
+          categoryName={category.name}
+          value={category.amount}
+          sliderMax={category.sliderMax}
+          onChange={(amount) => setCategoryAmount(monthId, category.id, amount)}
+          onClose={() => setIsEditingAmount(false)}
+        />
+      )}
     </li>
   )
 }

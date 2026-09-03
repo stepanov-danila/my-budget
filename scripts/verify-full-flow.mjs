@@ -41,33 +41,27 @@ try {
   // --- Category management + amount entry ---
   await page.getByRole('button', { name: '+ Добавить категорию' }).click()
   await page.getByRole('option', { name: 'Продукты' }).click()
+  await page.getByLabel('Изменить сумму категории Продукты').click()
   await page.getByLabel('Сумма, вручную').fill('5000')
+  await page.getByRole('button', { name: 'Готово' }).click()
   console.log('✓ Added "Продукты" from defaults and set its amount manually to 5000')
 
   await page.getByRole('button', { name: '+ Добавить категорию' }).click()
   await page.getByPlaceholder('Своё название').fill('Ипотека')
   await page.getByRole('button', { name: 'Добавить', exact: true }).click()
-  const sliders = page.getByLabel('Сумма, слайдер')
-  await sliders.nth(1).fill('12000')
+  await page.getByLabel('Изменить сумму категории Ипотека').click()
+  await page.getByLabel('Сумма, слайдер').fill('12000')
+  await page.getByRole('button', { name: 'Готово' }).click()
   console.log('✓ Added "Ипотека" manually and set its amount via the slider to 12000')
 
-  const rowNamesBeforeBlur = await page
-    .locator('ul[aria-label="Список категорий"] li')
-    .allTextContents()
-  assert(
-    rowNamesBeforeBlur[1].includes('Ипотека'),
-    'list should not reorder while the field is still focused',
-  )
-  console.log('✓ List order is stable while the amount field is still focused')
-
-  await sliders.nth(1).blur()
   const rowNames = await page
     .locator('ul[aria-label="Список категорий"] li')
     .allTextContents()
-  assert(rowNames[0].includes('Ипотека'), 'the higher-amount category should sort first')
-  console.log(
-    '✓ Categories are sorted by amount descending on blur (Ипотека above Продукты)',
+  assert(
+    rowNames[0].includes('Продукты') && rowNames[1].includes('Ипотека'),
+    'the list should keep insertion order regardless of amount',
   )
+  console.log('✓ Category list order stays stable (Продукты above Ипотека, by insertion)')
 
   const balance = await page.getByTestId('balance-difference').textContent()
   assert(

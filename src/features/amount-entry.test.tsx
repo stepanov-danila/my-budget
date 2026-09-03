@@ -22,9 +22,57 @@ function getCategory() {
   return useBudgetStore.getState().months[0].categories[0]
 }
 
+async function openAmountDialog(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByLabelText('Изменить сумму категории Продукты'))
+}
+
 describe('amount-entry', () => {
-  it('initializes a new category with a 0-50,000 slider range (Fresh category default range)', () => {
+  it('opens a dialog with the amount editor when the amount is tapped (Opening the amount editor)', async () => {
+    const user = userEvent.setup()
     render(<App />)
+
+    expect(screen.queryByLabelText('Сумма, вручную')).not.toBeInTheDocument()
+
+    await openAmountDialog(user)
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    const numberField = screen.getByLabelText('Сумма, вручную') as HTMLInputElement
+    expect(numberField.value).toBe('0')
+  })
+
+  it('shows the amount exactly once per row, with no separate always-visible input (Single amount display without duplication)', () => {
+    render(<App />)
+
+    expect(screen.getByLabelText('Изменить сумму категории Продукты')).toHaveTextContent(
+      '0',
+    )
+    expect(screen.queryByLabelText('Сумма, вручную')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Сумма, слайдер')).not.toBeInTheDocument()
+  })
+
+  it('closes the dialog and shows the updated amount on the row (Closing the editor)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await openAmountDialog(user)
+    const numberField = screen.getByLabelText('Сумма, вручную')
+    await user.clear(numberField)
+    await user.type(numberField, '3000')
+
+    await user.click(screen.getByRole('button', { name: 'Готово' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Изменить сумму категории Продукты')).toHaveTextContent(
+      '3',
+    )
+    expect(getCategory().amount).toBe(3000)
+  })
+
+  it('initializes a new category with a 0-50,000 slider range (Fresh category default range)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openAmountDialog(user)
+
     const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
     expect(slider.min).toBe('0')
     expect(slider.max).toBe('50000')
@@ -34,6 +82,7 @@ describe('amount-entry', () => {
   it('updates the slider when the manual field is edited (Manual entry updates slider)', async () => {
     const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     const numberField = screen.getByLabelText('Сумма, вручную')
     await user.clear(numberField)
@@ -44,8 +93,10 @@ describe('amount-entry', () => {
     expect(getCategory().amount).toBe(12400)
   })
 
-  it('updates the manual field when the slider is dragged (Slider updates field)', () => {
+  it('updates the manual field when the slider is dragged (Slider updates field)', async () => {
+    const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
     fireEvent.change(slider, { target: { value: '15000' } })
@@ -58,6 +109,7 @@ describe('amount-entry', () => {
   it('does not grow the slider maximum when a typed value exceeds it without matching exactly (Typed value exceeds max)', async () => {
     const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     const numberField = screen.getByLabelText('Сумма, вручную')
     await user.clear(numberField)
@@ -72,6 +124,7 @@ describe('amount-entry', () => {
   it('grows the slider maximum when a typed value exactly matches it (Typed value exactly matches the max)', async () => {
     const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     const numberField = screen.getByLabelText('Сумма, вручную')
     await user.clear(numberField)
@@ -82,8 +135,10 @@ describe('amount-entry', () => {
     expect(slider.max).toBe('100000')
   })
 
-  it('grows the slider maximum when dragged to its rightmost position (Dragged to edge)', () => {
+  it('grows the slider maximum when dragged to its rightmost position (Dragged to edge)', async () => {
+    const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
     expect(slider.max).toBe('50000')
@@ -93,8 +148,10 @@ describe('amount-entry', () => {
     expect(getCategory().sliderMax).toBe(100000)
   })
 
-  it('grows the slider maximum at most once per continuous drag gesture (Growth does not cascade within one drag)', () => {
+  it('grows the slider maximum at most once per continuous drag gesture (Growth does not cascade within one drag)', async () => {
+    const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
     const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
 
     fireEvent.pointerDown(slider)
@@ -114,6 +171,7 @@ describe('amount-entry', () => {
   it('increments the amount by one step via the + button (Increment button)', async () => {
     const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     await user.click(screen.getByLabelText('Увеличить сумму'))
 
@@ -129,6 +187,7 @@ describe('amount-entry', () => {
     const categoryId = getCategory().id
     useBudgetStore.getState().setCategoryAmount('2026-08', categoryId, 5000)
 
+    await openAmountDialog(user)
     await user.click(screen.getByLabelText('Уменьшить сумму'))
 
     expect(getCategory().amount).toBe(4000)
@@ -137,6 +196,7 @@ describe('amount-entry', () => {
   it('does not decrement the amount below zero (Decrement does not go below zero)', async () => {
     const user = userEvent.setup()
     render(<App />)
+    await openAmountDialog(user)
 
     await user.click(screen.getByLabelText('Уменьшить сумму'))
 

@@ -4,12 +4,11 @@ interface AmountInputProps {
   value: number
   sliderMax: number
   onChange: (value: number) => void
-  onBlur?: () => void
 }
 
 const SLIDER_STEP = 1000
 
-export function AmountInput({ value, sliderMax, onChange, onBlur }: AmountInputProps) {
+export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
   const id = useId()
   const isDraggingRef = useRef(false)
   const grewDuringDragRef = useRef(false)
@@ -51,12 +50,10 @@ export function AmountInput({ value, sliderMax, onChange, onBlur }: AmountInputP
 
   function handleIncrement() {
     onChange(value + SLIDER_STEP)
-    onBlur?.()
   }
 
   function handleDecrement() {
     onChange(Math.max(0, value - SLIDER_STEP))
-    onBlur?.()
   }
 
   return (
@@ -72,7 +69,6 @@ export function AmountInput({ value, sliderMax, onChange, onBlur }: AmountInputP
         onPointerDown={handleSliderPointerDown}
         onPointerUp={handleSliderPointerUp}
         onPointerCancel={handleSliderPointerUp}
-        onBlur={onBlur}
         aria-label="Сумма, слайдер"
         className="h-2 flex-1 accent-blue-600"
       />
@@ -92,7 +88,6 @@ export function AmountInput({ value, sliderMax, onChange, onBlur }: AmountInputP
           step={SLIDER_STEP}
           value={value}
           onChange={handleNumberChange}
-          onBlur={onBlur}
           aria-label="Сумма, вручную"
           className="w-20 rounded-lg border border-slate-300 px-2 py-1 text-right text-sm dark:border-slate-600 dark:bg-slate-800"
         />

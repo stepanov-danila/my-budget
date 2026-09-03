@@ -12,6 +12,7 @@ const UNDO_WINDOW_MS = 5000
 interface PendingUndo {
   monthId: string
   category: Category
+  index: number
 }
 
 export function CategorySection() {
@@ -40,8 +41,13 @@ export function CategorySection() {
 
   function handleDelete(category: Category) {
     if (!activeMonthId) return
-    removeCategory(activeMonthId, category.id)
-    setPendingUndo({ monthId: activeMonthId, category })
+    const removed = removeCategory(activeMonthId, category.id)
+    if (!removed) return
+    setPendingUndo({
+      monthId: activeMonthId,
+      category: removed.category,
+      index: removed.index,
+    })
 
     if (undoTimer.current) clearTimeout(undoTimer.current)
     undoTimer.current = setTimeout(() => {
@@ -52,7 +58,7 @@ export function CategorySection() {
   function handleUndo() {
     if (!pendingUndo) return
     if (undoTimer.current) clearTimeout(undoTimer.current)
-    restoreCategory(pendingUndo.monthId, pendingUndo.category)
+    restoreCategory(pendingUndo.monthId, pendingUndo.category, pendingUndo.index)
     setPendingUndo(null)
   }
 
