@@ -15,11 +15,11 @@
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
+    "@ant-design/icons": "^6.3.4",
+    "antd": "^6.6.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "recharts": "^3.10.1",
-    "tailwindcss": "^4.3.3",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

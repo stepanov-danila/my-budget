@@ -121,6 +121,7 @@
 
 ## 12. Технологический ориентир
 
-- React + TypeScript + Vite, Tailwind для стилей, персистентность через
-  `localStorage`, PWA (манифест + service worker, см. раздел 3). Финальный
-  выбор стека фиксируется на этапе OpenSpec `design.md`.
+- React + TypeScript + Vite, Ant Design для UI-компонентов и стилей,
+  персистентность через `localStorage`, PWA (манифест + service worker, см.
+  раздел 3). Финальный выбор стека фиксируется на этапе OpenSpec
+  `design.md`.

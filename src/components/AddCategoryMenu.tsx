@@ -1,3 +1,4 @@
+import { Button, Input, List, Modal, Typography } from 'antd'
 import { useId, useState } from 'react'
 import {
   DEFAULT_EXPENSE_CATEGORIES,
@@ -10,6 +11,14 @@ interface AddCategoryMenuProps {
   monthId: string
   type: CategoryType
   existingNames: string[]
+}
+
+const visuallyHidden: React.CSSProperties = {
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
 }
 
 export function AddCategoryMenu({ monthId, type, existingNames }: AddCategoryMenuProps) {
@@ -29,8 +38,7 @@ export function AddCategoryMenu({ monthId, type, existingNames }: AddCategoryMen
     setName('')
   }
 
-  function handleManualSubmit(event: React.FormEvent) {
-    event.preventDefault()
+  function handleManualSubmit() {
     const trimmed = name.trim()
     if (!trimmed) return
     addCategory(monthId, type, trimmed)
@@ -44,80 +52,66 @@ export function AddCategoryMenu({ monthId, type, existingNames }: AddCategoryMen
 
   return (
     <>
-      <button
-        type="button"
+      <Button
+        type="dashed"
+        block
         onClick={() => setOpen(true)}
-        className="mx-4 mt-3 flex w-[calc(100%-2rem)] items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 py-3 text-sm font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300"
+        style={{ margin: '12px 16px 0', width: 'calc(100% - 32px)' }}
       >
         + Добавить категорию
-      </button>
+      </Button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-          onClick={close}
+      <Modal title="Новая категория" open={open} onCancel={close} footer={null}>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleManualSubmit()
+          }}
+          style={{ display: 'flex', gap: 8, marginTop: 16 }}
         >
-          <div
-            className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-800"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              Новая категория
-            </h2>
+          <label htmlFor={inputId} style={visuallyHidden}>
+            Название категории
+          </label>
+          <Input
+            id={inputId}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Своё название"
+          />
+          <Button type="primary" htmlType="submit">
+            Добавить
+          </Button>
+        </form>
 
-            <form onSubmit={handleManualSubmit} className="mt-4 flex gap-2">
-              <label htmlFor={inputId} className="sr-only">
-                Название категории
-              </label>
-              <input
-                id={inputId}
-                type="text"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Своё название"
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white"
-              >
-                Добавить
-              </button>
-            </form>
-
-            {availableDefaults.length > 0 && (
-              <div className="mt-4">
-                <p className="text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
-                  Или выбрать из списка
-                </p>
-                <ul className="mt-2 max-h-56 space-y-1 overflow-y-auto">
-                  {availableDefaults.map((categoryName) => (
-                    <li key={categoryName}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={false}
-                        onClick={() => handleSelectDefault(categoryName)}
-                        className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
-                      >
-                        {categoryName}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={close}
-              className="mt-4 w-full rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+        {availableDefaults.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <Typography.Text
+              type="secondary"
+              style={{ fontSize: 12, textTransform: 'uppercase' }}
             >
-              Отмена
-            </button>
+              Или выбрать из списка
+            </Typography.Text>
+            <List
+              style={{ marginTop: 8, maxHeight: 224, overflowY: 'auto' }}
+              dataSource={availableDefaults}
+              renderItem={(categoryName) => (
+                <List.Item style={{ padding: 0, border: 'none' }}>
+                  <Button
+                    type="text"
+                    role="option"
+                    aria-selected={false}
+                    block
+                    onClick={() => handleSelectDefault(categoryName)}
+                    style={{ textAlign: 'left' }}
+                  >
+                    {categoryName}
+                  </Button>
+                </List.Item>
+              )}
+            />
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </>
   )
 }

@@ -25,7 +25,10 @@ describe('theme-switching', () => {
     await user.click(screen.getByLabelText('Включить тёмную тему'))
 
     expect(useBudgetStore.getState().theme).toBe('dark')
-    expect(document.documentElement.classList.contains('dark')).toBe(true)
+    expect(screen.getByLabelText('Включить светлую тему')).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
   })
 
   it('switches the UI back to the light color scheme (Switching to light)', async () => {
@@ -36,7 +39,10 @@ describe('theme-switching', () => {
     await user.click(screen.getByLabelText('Включить светлую тему'))
 
     expect(useBudgetStore.getState().theme).toBe('light')
-    expect(document.documentElement.classList.contains('dark')).toBe(false)
+    expect(screen.getByLabelText('Включить тёмную тему')).toHaveAttribute(
+      'aria-checked',
+      'false',
+    )
   })
 
   it('re-applies the previously chosen dark theme after a reload (Reload after choosing dark)', async () => {

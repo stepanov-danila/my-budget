@@ -1,4 +1,5 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { theme as antdTheme, Typography } from 'antd'
 import type { Category } from '../types'
 
 interface CategoryChartProps {
@@ -27,15 +28,28 @@ const currencyFormatter = new Intl.NumberFormat('ru-RU', {
 })
 
 export function CategoryChart({ categories }: CategoryChartProps) {
+  const { token } = antdTheme.useToken()
   const total = categories.reduce((sum, category) => sum + category.amount, 0)
 
   if (categories.length === 0 || total === 0) {
     return (
       <div
         data-testid="category-chart-empty"
-        className="mx-4 flex h-40 items-center justify-center rounded-xl border border-dashed border-slate-300 px-4 text-center text-sm text-slate-500 dark:border-slate-600 dark:text-slate-400"
+        style={{
+          margin: '0 16px',
+          height: 160,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 16px',
+          borderRadius: token.borderRadiusLG,
+          border: `1px dashed ${token.colorBorder}`,
+        }}
       >
-        Добавьте суммы по категориям, чтобы увидеть диаграмму
+        <Typography.Text type="secondary">
+          Добавьте суммы по категориям, чтобы увидеть диаграмму
+        </Typography.Text>
       </div>
     )
   }
@@ -46,7 +60,7 @@ export function CategoryChart({ categories }: CategoryChartProps) {
   }))
 
   return (
-    <div data-testid="category-chart" className="mx-4 h-52">
+    <div data-testid="category-chart" style={{ margin: '0 16px', height: 208 }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

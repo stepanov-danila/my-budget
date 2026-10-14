@@ -16,24 +16,22 @@ try {
   console.log('✓ App loaded on a mobile viewport (iPhone 13 emulation)')
 
   // --- Month management ---
-  const firstMonthTab = page
-    .getByRole('button', { name: /^\p{Lu}\p{Ll}+ \d{4}$/u })
-    .first()
+  const firstMonthTab = page.getByRole('tab', { name: /^\p{Lu}\p{Ll}+ \d{4}$/u }).first()
   await assert(await firstMonthTab.isVisible(), 'initial month tab should be visible')
   const firstMonthName = await firstMonthTab.textContent()
 
   await page.getByLabel('Добавить месяц').click()
   await page.getByRole('menuitem', { name: 'Начать с пустого месяца' }).click()
-  const monthTabs = page.locator('nav[aria-label="Месяцы"] button[aria-current]')
-  const newMonthName = await monthTabs.first().textContent()
+  const activeMonthTab = page.getByRole('tab', { selected: true })
+  const newMonthName = await activeMonthTab.textContent()
   assert(newMonthName !== firstMonthName, 'a new month tab should become active')
   console.log(`✓ Added a new empty month (${newMonthName}) and it became active`)
 
-  await page.getByRole('button', { name: firstMonthName, exact: true }).click()
+  await page.getByRole('tab', { name: firstMonthName, exact: true }).click()
   assert(
     (await page
-      .getByRole('button', { name: firstMonthName, exact: true })
-      .getAttribute('aria-current')) === 'true',
+      .getByRole('tab', { name: firstMonthName, exact: true })
+      .getAttribute('aria-selected')) === 'true',
     'switching tabs should change the active month',
   )
   console.log('✓ Switched back to the original month')
@@ -50,12 +48,16 @@ try {
   await page.getByPlaceholder('Своё название').fill('Ипотека')
   await page.getByRole('button', { name: 'Добавить', exact: true }).click()
   await page.getByLabel('Изменить сумму категории Ипотека').click()
-  await page.getByLabel('Сумма, слайдер').fill('12000')
+  const sliderHandle = page.getByLabel('Сумма, слайдер')
+  await sliderHandle.focus()
+  for (let i = 0; i < 12; i += 1) {
+    await sliderHandle.press('ArrowRight')
+  }
   await page.getByRole('button', { name: 'Готово' }).click()
   console.log('✓ Added "Ипотека" manually and set its amount via the slider to 12000')
 
   const rowNames = await page
-    .locator('ul[aria-label="Список категорий"] li')
+    .locator('[aria-label="Список категорий"] ul.ant-list-items > li')
     .allTextContents()
   assert(
     rowNames[0].includes('Продукты') && rowNames[1].includes('Ипотека'),
@@ -83,30 +85,34 @@ try {
   console.log('✓ Undo toast appeared after deleting a category')
   await page.getByRole('button', { name: 'Отменить' }).click()
   assert(
-    (await page.locator('ul[aria-label="Список категорий"] li').count()) === 2,
+    (await page
+      .locator('[aria-label="Список категорий"] ul.ant-list-items > li')
+      .count()) === 2,
     'category should be restored after Undo',
   )
   console.log('✓ Deleted a category and restored it via Undo')
 
   // --- Theme switching ---
-  await page.getByLabel('Включить тёмную тему').click()
-  const isDark = await page.evaluate(() =>
-    document.documentElement.classList.contains('dark'),
+  const themeToggle = page.getByLabel('Включить тёмную тему')
+  await themeToggle.click()
+  assert(
+    (await page.getByLabel('Включить светлую тему').getAttribute('aria-checked')) ===
+      'true',
+    'theme switch should report checked after toggling to dark',
   )
-  assert(isDark, 'html element should carry the dark class after toggling theme')
   console.log('✓ Switched to dark theme')
 
   // --- Month deletion with confirmation ---
-  await page.getByLabel(`Удалить ${newMonthName}`).click()
-  await page.getByRole('button', { name: 'Отмена' }).click()
+  await page.getByLabel(`Удалить ${newMonthName}`, { exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Отмена' }).click()
   assert(
-    await page.getByRole('button', { name: newMonthName, exact: true }).isVisible(),
+    await page.getByRole('tab', { name: newMonthName, exact: true }).isVisible(),
     'cancelling deletion should keep the month',
   )
-  await page.getByLabel(`Удалить ${newMonthName}`).click()
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Удалить' }).click()
+  await page.getByLabel(`Удалить ${newMonthName}`, { exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Удалить' }).click()
   assert(
-    (await page.getByRole('button', { name: newMonthName, exact: true }).count()) === 0,
+    (await page.getByRole('tab', { name: newMonthName, exact: true }).count()) === 0,
     'confirming deletion should remove the month',
   )
   console.log('✓ Cancelled one month deletion, then confirmed another')
@@ -127,7 +133,8 @@ try {
     'previously entered data should survive offline reload',
   )
   assert(
-    await page.evaluate(() => document.documentElement.classList.contains('dark')),
+    (await page.getByLabel('Включить светлую тему').getAttribute('aria-checked')) ===
+      'true',
     'theme choice should survive offline reload',
   )
   console.log('✓ App works offline as an installed PWA, with data and theme intact')

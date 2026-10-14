@@ -1,4 +1,6 @@
-import { useId, useRef } from 'react'
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, InputNumber, Slider } from 'antd'
+import { useRef } from 'react'
 
 interface AmountInputProps {
   value: number
@@ -9,43 +11,29 @@ interface AmountInputProps {
 const SLIDER_STEP = 1000
 
 export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
-  const id = useId()
-  const isDraggingRef = useRef(false)
+  /** Guards the adaptive-slider-max growth so it fires at most once per continuous gesture. */
   const grewDuringDragRef = useRef(false)
 
-  function handleSliderPointerDown() {
-    isDraggingRef.current = true
-    grewDuringDragRef.current = false
-  }
+  function handleSliderChange(next: number) {
+    let nextValue = next
 
-  function handleSliderPointerUp() {
-    isDraggingRef.current = false
-    grewDuringDragRef.current = false
-  }
-
-  function handleSliderChange(event: React.ChangeEvent<HTMLInputElement>) {
-    let next = Number(event.target.value)
-
-    if (isDraggingRef.current && next === sliderMax) {
+    if (nextValue === sliderMax) {
       if (grewDuringDragRef.current) {
-        // The slider max already grew once in this drag gesture. If the
-        // browser re-evaluates the thumb position against the new,
-        // larger range and lands exactly on the new max again (without
-        // the user releasing and re-dragging), nudge below it so the
-        // store's exact-match growth check doesn't fire a second time
-        // for what is still, from the user's perspective, one gesture.
-        next -= 1
+        nextValue -= 1
       } else {
         grewDuringDragRef.current = true
       }
     }
 
-    onChange(next)
+    onChange(nextValue)
   }
 
-  function handleNumberChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const next = Number(event.target.value)
-    onChange(Number.isNaN(next) ? 0 : Math.max(0, next))
+  function handleSliderChangeComplete() {
+    grewDuringDragRef.current = false
+  }
+
+  function handleNumberChange(next: number | null) {
+    onChange(next === null || Number.isNaN(next) ? 0 : Math.max(0, next))
   }
 
   function handleIncrement() {
@@ -57,48 +45,42 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <input
-        id={`${id}-range`}
-        type="range"
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <Slider
+        ariaLabelForHandle="Сумма, слайдер"
         min={0}
         max={sliderMax}
         step={SLIDER_STEP}
         value={Math.min(value, sliderMax)}
         onChange={handleSliderChange}
-        onPointerDown={handleSliderPointerDown}
-        onPointerUp={handleSliderPointerUp}
-        onPointerCancel={handleSliderPointerUp}
-        aria-label="Сумма, слайдер"
-        className="h-2 flex-1 accent-blue-600"
+        onChangeComplete={handleSliderChangeComplete}
+        tooltip={{ open: false }}
+        style={{ flex: 1 }}
       />
-      <div className="flex shrink-0 items-center gap-1">
-        <button
-          type="button"
-          onClick={handleDecrement}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        <Button
+          shape="circle"
+          size="small"
           aria-label="Уменьшить сумму"
-          className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-slate-600 dark:border-slate-600 dark:text-slate-300"
-        >
-          −
-        </button>
-        <input
-          id={`${id}-number`}
-          type="number"
+          icon={<MinusOutlined />}
+          onClick={handleDecrement}
+        />
+        <InputNumber
+          aria-label="Сумма, вручную"
           min={0}
           step={SLIDER_STEP}
           value={value}
           onChange={handleNumberChange}
-          aria-label="Сумма, вручную"
-          className="w-20 rounded-lg border border-slate-300 px-2 py-1 text-right text-sm dark:border-slate-600 dark:bg-slate-800"
+          controls={false}
+          style={{ width: 88 }}
         />
-        <button
-          type="button"
-          onClick={handleIncrement}
+        <Button
+          shape="circle"
+          size="small"
           aria-label="Увеличить сумму"
-          className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-slate-600 dark:border-slate-600 dark:text-slate-300"
-        >
-          +
-        </button>
+          icon={<PlusOutlined />}
+          onClick={handleIncrement}
+        />
       </div>
     </div>
   )

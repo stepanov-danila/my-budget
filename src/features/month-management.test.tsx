@@ -30,8 +30,8 @@ describe('month-management', () => {
     await user.click(screen.getByLabelText('Добавить месяц'))
     await user.click(screen.getByRole('menuitem', { name: 'Начать с пустого месяца' }))
 
-    const newTab = screen.getByRole('button', { name: 'Сентябрь 2026' })
-    expect(newTab).toHaveAttribute('aria-current', 'true')
+    const newTab = screen.getByRole('tab', { name: 'Сентябрь 2026' })
+    expect(newTab).toHaveAttribute('aria-selected', 'true')
     expect(
       useBudgetStore.getState().months.find((m) => m.id === '2026-09')?.categories,
     ).toEqual([])
@@ -71,7 +71,7 @@ describe('month-management', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    await user.click(screen.getByRole('button', { name: 'Июль 2026' }))
+    await user.click(screen.getByRole('tab', { name: 'Июль 2026' }))
     expect(useBudgetStore.getState().activeMonthId).toBe('2026-07')
   })
 
@@ -88,7 +88,7 @@ describe('month-management', () => {
     render(<App />)
 
     await user.click(screen.getByLabelText('Удалить Июль 2026'))
-    const dialog = screen.getByRole('alertdialog')
+    const dialog = screen.getByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Удалить' }))
 
     expect(useBudgetStore.getState().months.map((m) => m.id)).toEqual(['2026-08'])
@@ -107,7 +107,7 @@ describe('month-management', () => {
     render(<App />)
 
     await user.click(screen.getByLabelText('Удалить Июль 2026'))
-    const dialog = screen.getByRole('alertdialog')
+    const dialog = screen.getByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Отмена' }))
 
     expect(useBudgetStore.getState().months.map((m) => m.id)).toEqual([
@@ -141,8 +141,8 @@ describe('month-management', () => {
     })
 
     render(<App />)
-    expect(screen.getByRole('button', { name: 'Июль 2026' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Август 2026' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Сентябрь 2026' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Июль 2026' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Август 2026' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Сентябрь 2026' })).toBeInTheDocument()
   })
 })

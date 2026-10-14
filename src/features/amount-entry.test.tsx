@@ -26,6 +26,20 @@ async function openAmountDialog(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByLabelText('Изменить сумму категории Продукты'))
 }
 
+function getSliderHandle() {
+  return screen.getByLabelText('Сумма, слайдер')
+}
+
+/** AntD's Slider handle is keyboard-operable; 'End' jumps it to its max. */
+function dragSliderToMax() {
+  const handle = getSliderHandle()
+  fireEvent.keyDown(handle, { key: 'End', keyCode: 35 })
+}
+
+function releaseSliderGesture() {
+  fireEvent.keyUp(getSliderHandle(), { key: 'End', keyCode: 35 })
+}
+
 describe('amount-entry', () => {
   it('opens a dialog with the amount editor when the amount is tapped (Opening the amount editor)', async () => {
     const user = userEvent.setup()
@@ -73,10 +87,9 @@ describe('amount-entry', () => {
     render(<App />)
     await openAmountDialog(user)
 
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
-    expect(slider.min).toBe('0')
-    expect(slider.max).toBe('50000')
-    expect(slider.step).toBe('1000')
+    const slider = getSliderHandle()
+    expect(slider).toHaveAttribute('aria-valuemin', '0')
+    expect(slider).toHaveAttribute('aria-valuemax', '50000')
   })
 
   it('updates the slider when the manual field is edited (Manual entry updates slider)', async () => {
@@ -86,11 +99,11 @@ describe('amount-entry', () => {
 
     const numberField = screen.getByLabelText('Сумма, вручную')
     await user.clear(numberField)
-    await user.type(numberField, '12400')
+    await user.type(numberField, '12000')
 
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
-    expect(slider.value).toBe('12400')
-    expect(getCategory().amount).toBe(12400)
+    const slider = getSliderHandle()
+    expect(slider).toHaveAttribute('aria-valuenow', '12000')
+    expect(getCategory().amount).toBe(12000)
   })
 
   it('updates the manual field when the slider is dragged (Slider updates field)', async () => {
@@ -98,12 +111,13 @@ describe('amount-entry', () => {
     render(<App />)
     await openAmountDialog(user)
 
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
-    fireEvent.change(slider, { target: { value: '15000' } })
+    const slider = getSliderHandle()
+    fireEvent.keyDown(slider, { key: 'ArrowRight', keyCode: 39 })
+    fireEvent.keyUp(slider, { key: 'ArrowRight', keyCode: 39 })
 
     const numberField = screen.getByLabelText('Сумма, вручную') as HTMLInputElement
-    expect(numberField.value).toBe('15000')
-    expect(getCategory().amount).toBe(15000)
+    expect(numberField.value).toBe('1000')
+    expect(getCategory().amount).toBe(1000)
   })
 
   it('does not grow the slider maximum when a typed value exceeds it without matching exactly (Typed value exceeds max)', async () => {
@@ -117,8 +131,7 @@ describe('amount-entry', () => {
 
     expect(getCategory().amount).toBe(52000)
     expect(getCategory().sliderMax).toBe(50000)
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
-    expect(slider.max).toBe('50000')
+    expect(getSliderHandle()).toHaveAttribute('aria-valuemax', '50000')
   })
 
   it('grows the slider maximum when a typed value exactly matches it (Typed value exactly matches the max)', async () => {
@@ -131,8 +144,7 @@ describe('amount-entry', () => {
     await user.type(numberField, '50000')
 
     expect(getCategory().sliderMax).toBe(100000)
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
-    expect(slider.max).toBe('100000')
+    expect(getSliderHandle()).toHaveAttribute('aria-valuemax', '100000')
   })
 
   it('grows the slider maximum when dragged to its rightmost position (Dragged to edge)', async () => {
@@ -140,10 +152,10 @@ describe('amount-entry', () => {
     render(<App />)
     await openAmountDialog(user)
 
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
-    expect(slider.max).toBe('50000')
+    expect(getSliderHandle()).toHaveAttribute('aria-valuemax', '50000')
 
-    fireEvent.change(slider, { target: { value: '50000' } })
+    dragSliderToMax()
+    releaseSliderGesture()
 
     expect(getCategory().sliderMax).toBe(100000)
   })
@@ -152,20 +164,18 @@ describe('amount-entry', () => {
     const user = userEvent.setup()
     render(<App />)
     await openAmountDialog(user)
-    const slider = screen.getByLabelText('Сумма, слайдер') as HTMLInputElement
 
-    fireEvent.pointerDown(slider)
-    fireEvent.change(slider, { target: { value: '50000' } })
+    dragSliderToMax()
     expect(getCategory().sliderMax).toBe(100000)
 
-    // Simulate the browser re-evaluating the thumb position against the
+    // Simulate the browser re-evaluating the handle's position against the
     // newly-grown range and landing exactly on the new max again, still
-    // within the same drag gesture (pointer not yet released).
-    fireEvent.change(slider, { target: { value: '100000' } })
+    // within the same gesture (key not yet released).
+    dragSliderToMax()
     expect(getCategory().sliderMax).toBe(100000)
     expect(getCategory().amount).toBe(99999)
 
-    fireEvent.pointerUp(slider)
+    releaseSliderGesture()
   })
 
   it('increments the amount by one step via the + button (Increment button)', async () => {

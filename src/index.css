@@ -1,6 +1,4 @@
-@import 'tailwindcss';
-
-@custom-variant dark (&:where(.dark, .dark *));
+@import 'antd/dist/reset.css';
 
 :root {
   color-scheme: light dark;

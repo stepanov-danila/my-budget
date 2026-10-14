@@ -1,3 +1,4 @@
+import { Typography, theme as antdTheme } from 'antd'
 import { useBudgetStore } from '../store/useBudgetStore'
 import { computeMonthTotals } from '../store/selectors'
 
@@ -8,32 +9,56 @@ const currencyFormatter = new Intl.NumberFormat('ru-RU', {
 })
 
 export function BalanceBar() {
+  const { token } = antdTheme.useToken()
   const activeMonth = useBudgetStore((state) =>
     state.months.find((month) => month.id === state.activeMonthId),
   )
   const { income, expense, difference } = computeMonthTotals(activeMonth)
+  const isPositive = difference >= 0
 
   return (
-    <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
-      <p className="text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
-        Баланс месяца
-      </p>
-      <p
-        data-testid="balance-difference"
-        className={`text-3xl font-semibold ${
-          difference >= 0
-            ? 'text-emerald-600 dark:text-emerald-400'
-            : 'text-red-600 dark:text-red-400'
-        }`}
+    <div
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        padding: '12px 16px',
+        background: token.colorBgContainer,
+        borderBottom: `1px solid ${token.colorBorderSecondary}`,
+      }}
+    >
+      <Typography.Text
+        type="secondary"
+        style={{
+          display: 'block',
+          fontSize: 12,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+        }}
       >
-        {difference >= 0 ? '+' : ''}
+        Баланс месяца
+      </Typography.Text>
+      <Typography.Title
+        level={3}
+        data-testid="balance-difference"
+        style={{
+          margin: '4px 0 0',
+          color: isPositive ? token.colorSuccess : token.colorError,
+        }}
+      >
+        {isPositive ? '+' : ''}
         {currencyFormatter.format(difference)}
-      </p>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Доход <span data-testid="balance-income">{currencyFormatter.format(income)}</span>{' '}
+      </Typography.Title>
+      <Typography.Text type="secondary" style={{ fontSize: 14 }}>
+        Доход{' '}
+        <Typography.Text data-testid="balance-income" strong>
+          {currencyFormatter.format(income)}
+        </Typography.Text>{' '}
         / Расход{' '}
-        <span data-testid="balance-expense">{currencyFormatter.format(expense)}</span>
-      </p>
+        <Typography.Text data-testid="balance-expense" strong>
+          {currencyFormatter.format(expense)}
+        </Typography.Text>
+      </Typography.Text>
     </div>
   )
 }
