@@ -30,4 +30,4 @@ the device's safe-area insets instead of assuming zero top inset.
 
 #### Scenario: Standalone launch on a device with a status bar or notch
 - **WHEN** the installed app launches in standalone mode on a device with a status bar or notch
-- **THEN** the header and sticky balance bar are padded clear of the safe area and do not render under the status bar indicators
+- **THEN** the blank top spacer and the sticky balance bar are padded clear of the safe area and nothing renders under the status bar indicators

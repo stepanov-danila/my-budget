@@ -2,27 +2,20 @@
 
 ## Purpose
 
-Lets the user toggle between a light and a dark UI theme and keeps that
-choice applied across app restarts.
+Keeps the UI's light/dark appearance in sync with the OS/browser's
+color-scheme preference, including live while the app is open.
 
 ## Requirements
 
-### Requirement: Toggle theme
-The system SHALL provide a control to switch the UI between light and dark
-themes.
+### Requirement: Follow system theme
+The system SHALL render the UI using the light or dark color scheme
+reported by the OS/browser (`prefers-color-scheme`), with no manual
+control to override it.
 
-#### Scenario: Switching to dark
-- **WHEN** the user toggles the theme to dark
-- **THEN** all screens render using the dark color scheme
+#### Scenario: Launching with a system theme
+- **WHEN** the app launches
+- **THEN** it renders using whichever of light or dark the OS/browser currently reports via `prefers-color-scheme`
 
-#### Scenario: Switching to light
-- **WHEN** the user toggles the theme to light
-- **THEN** all screens render using the light color scheme
-
-### Requirement: Persisted theme choice
-The system SHALL remember the selected theme across app restarts and page
-reloads.
-
-#### Scenario: Reload after choosing dark
-- **WHEN** the user reopens the app after previously selecting the dark theme
-- **THEN** the app opens already in the dark theme
+#### Scenario: System theme changes while the app is open
+- **WHEN** the user changes their OS/browser color-scheme preference while the app is open, without closing or reloading it
+- **THEN** the app immediately re-renders using the new color scheme
