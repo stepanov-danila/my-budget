@@ -6,7 +6,6 @@ import { useBudgetStore } from '../store/useBudgetStore'
 function resetStore() {
   localStorage.clear()
   useBudgetStore.setState({
-    theme: 'light',
     activeMonthId: '2026-08',
     months: [{ id: '2026-08', label: 'Август 2026', categories: [] }],
   })

@@ -1,56 +1,85 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
 import { useBudgetStore } from '../store/useBudgetStore'
 
 function resetStore() {
   localStorage.clear()
   useBudgetStore.setState({
-    theme: 'light',
     activeMonthId: '2026-08',
     months: [{ id: '2026-08', label: 'Август 2026', categories: [] }],
   })
 }
 
-beforeEach(() => {
-  resetStore()
-})
+function mockMatchMedia(initialMatches: boolean) {
+  let listener: ((event: MediaQueryListEvent) => void) | null = null
+  const mediaQueryList = {
+    matches: initialMatches,
+    media: '(prefers-color-scheme: dark)',
+    addEventListener: (
+      _event: string,
+      callback: (event: MediaQueryListEvent) => void,
+    ) => {
+      listener = callback
+    },
+    removeEventListener: () => {
+      listener = null
+    },
+  }
+
+  window.matchMedia = vi.fn().mockReturnValue(mediaQueryList) as typeof window.matchMedia
+
+  return {
+    emitChange(matches: boolean) {
+      mediaQueryList.matches = matches
+      listener?.({ matches } as MediaQueryListEvent)
+    },
+  }
+}
+
+// AntD's ConfigProvider algorithm (light vs dark) picks different token
+// values for the same semantic color; the balance bar's positive-amount
+// color (driven by `token.colorSuccess`) is a simple, already-rendered
+// signal that the algorithm actually switched.
+function getBalanceColor() {
+  return screen.getByTestId('balance-difference').style.color
+}
 
 describe('theme-switching', () => {
-  it('switches the UI to the dark color scheme (Switching to dark)', async () => {
-    const user = userEvent.setup()
-    render(<App />)
+  const originalMatchMedia = window.matchMedia
 
-    await user.click(screen.getByLabelText('Включить тёмную тему'))
-
-    expect(useBudgetStore.getState().theme).toBe('dark')
-    expect(screen.getByLabelText('Включить светлую тему')).toHaveAttribute(
-      'aria-checked',
-      'true',
-    )
+  beforeEach(() => {
+    resetStore()
   })
 
-  it('switches the UI back to the light color scheme (Switching to light)', async () => {
-    useBudgetStore.setState({ theme: 'dark' })
-    const user = userEvent.setup()
-    render(<App />)
-
-    await user.click(screen.getByLabelText('Включить светлую тему'))
-
-    expect(useBudgetStore.getState().theme).toBe('light')
-    expect(screen.getByLabelText('Включить тёмную тему')).toHaveAttribute(
-      'aria-checked',
-      'false',
-    )
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia
   })
 
-  it('re-applies the previously chosen dark theme after a reload (Reload after choosing dark)', async () => {
-    useBudgetStore.getState().setTheme('dark')
+  it('renders using the OS/browser color scheme on launch (Launching with a system theme)', () => {
+    mockMatchMedia(false)
+    const { unmount } = render(<App />)
+    const lightColor = getBalanceColor()
+    unmount()
 
-    vi.resetModules()
-    const { useBudgetStore: reloadedStore } = await import('../store/useBudgetStore')
+    mockMatchMedia(true)
+    render(<App />)
+    const darkColor = getBalanceColor()
 
-    expect(reloadedStore.getState().theme).toBe('dark')
+    expect(darkColor).not.toBe(lightColor)
+  })
+
+  it('re-renders immediately when the system theme changes while open (System theme changes while the app is open)', () => {
+    const { emitChange } = mockMatchMedia(false)
+
+    render(<App />)
+    const colorBefore = getBalanceColor()
+
+    act(() => {
+      emitChange(true)
+    })
+
+    const colorAfter = getBalanceColor()
+    expect(colorAfter).not.toBe(colorBefore)
   })
 })

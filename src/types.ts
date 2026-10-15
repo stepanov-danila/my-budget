@@ -20,7 +20,6 @@ export interface Month {
 }
 
 export interface AppState {
-  theme: Theme
   activeMonthId: string | null
   months: Month[]
 }

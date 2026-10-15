@@ -3,7 +3,6 @@ import type { AppState } from '../types'
 import { loadState, saveState, STORAGE_KEY } from './storage'
 
 const sampleState: AppState = {
-  theme: 'dark',
   activeMonthId: 'month-1',
   months: [
     {

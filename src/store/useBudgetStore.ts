@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { loadState, saveState } from '../lib/storage'
-import type { AppState, Category, CategoryType, Month, Theme } from '../types'
+import type { AppState, Category, CategoryType, Month } from '../types'
 
 const DEFAULT_SLIDER_MAX = 50_000
 const SLIDER_STEP = 50_000
@@ -58,18 +58,12 @@ function nextMonthDate(months: Month[]): Date {
   return new Date(latest.getFullYear(), latest.getMonth() + 1, 1)
 }
 
-function detectPreferredTheme(): Theme {
-  if (typeof window === 'undefined' || !window.matchMedia) return 'light'
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
 function loadInitialState(): AppState {
   const stored = loadState()
   if (stored && stored.months.length > 0) return stored
 
   const firstMonth = createEmptyMonth()
   return {
-    theme: detectPreferredTheme(),
     activeMonthId: firstMonth.id,
     months: [firstMonth],
   }
@@ -84,8 +78,6 @@ function withMonth(
 }
 
 interface BudgetActions {
-  setTheme: (theme: Theme) => void
-  toggleTheme: () => void
   setActiveMonth: (monthId: string) => void
   addMonth: (mode: 'empty' | 'carry-over') => void
   deleteMonth: (monthId: string) => void
@@ -102,11 +94,6 @@ export type BudgetStore = AppState & BudgetActions
 
 export const useBudgetStore = create<BudgetStore>()((set, get) => ({
   ...loadInitialState(),
-
-  setTheme: (theme) => set({ theme }),
-
-  toggleTheme: () =>
-    set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
 
   setActiveMonth: (monthId) => set({ activeMonthId: monthId }),
 
@@ -205,7 +192,6 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
 
 useBudgetStore.subscribe((state) => {
   saveState({
-    theme: state.theme,
     activeMonthId: state.activeMonthId,
     months: state.months,
   })

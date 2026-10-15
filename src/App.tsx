@@ -1,18 +1,14 @@
 import { App as AntdApp, ConfigProvider, Layout, theme as antdTheme } from 'antd'
-import { AppHeader } from './components/AppHeader'
 import { BalanceBar } from './components/BalanceBar'
 import { CategorySection } from './components/CategorySection'
 import { MonthTabs } from './components/MonthTabs'
-import { SAFE_AREA_HEADER_STYLE } from './constants/layout'
-import { useBudgetStore } from './store/useBudgetStore'
+import { SAFE_AREA_TOP_STYLE } from './constants/layout'
+import { useSystemTheme } from './hooks/useSystemTheme'
 
 function AppShell() {
   return (
     <Layout style={{ minHeight: '100svh' }}>
-      <Layout.Header style={SAFE_AREA_HEADER_STYLE}>
-        <AppHeader />
-      </Layout.Header>
-      <Layout.Content>
+      <Layout.Content style={SAFE_AREA_TOP_STYLE}>
         <MonthTabs />
         <BalanceBar />
         <CategorySection />
@@ -22,7 +18,7 @@ function AppShell() {
 }
 
 function App() {
-  const theme = useBudgetStore((state) => state.theme)
+  const theme = useSystemTheme()
 
   return (
     <ConfigProvider

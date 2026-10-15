@@ -6,7 +6,6 @@ beforeEach(() => {
   localStorage.clear()
   const { months } = useBudgetStore.getState()
   useBudgetStore.setState({
-    theme: 'light',
     activeMonthId: months[0]?.id ?? null,
     months: months.length > 0 ? [{ ...months[0], categories: [] }] : [],
   })
@@ -17,14 +16,6 @@ describe('useBudgetStore', () => {
     const state = useBudgetStore.getState()
     expect(state.months).toHaveLength(1)
     expect(state.activeMonthId).toBe(state.months[0].id)
-  })
-
-  it('reads and updates theme through the store', () => {
-    useBudgetStore.getState().setTheme('dark')
-    expect(useBudgetStore.getState().theme).toBe('dark')
-
-    useBudgetStore.getState().toggleTheme()
-    expect(useBudgetStore.getState().theme).toBe('light')
   })
 
   it('adds a category to the active month, appended, and persists the change', () => {

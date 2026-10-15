@@ -92,15 +92,35 @@ try {
   )
   console.log('✓ Deleted a category and restored it via Undo')
 
-  // --- Theme switching ---
-  const themeToggle = page.getByLabel('Включить тёмную тему')
-  await themeToggle.click()
+  // --- Layout: blank safe-area spacer replaces the removed header ---
+  const mainLandmark = page.getByRole('main')
   assert(
-    (await page.getByLabel('Включить светлую тему').getAttribute('aria-checked')) ===
-      'true',
-    'theme switch should report checked after toggling to dark',
+    await mainLandmark.isVisible(),
+    'main content landmark should be visible (replaces the removed header)',
   )
-  console.log('✓ Switched to dark theme')
+  console.log(
+    '✓ Main content landmark is visible (header removed, safe-area spacer in its place)',
+  )
+
+  // --- Theme follows the OS/browser, live, no manual toggle ---
+  const balanceDifference = page.getByTestId('balance-difference')
+  const colorInLight = await balanceDifference.evaluate(
+    (el) => getComputedStyle(el).color,
+  )
+
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.waitForFunction((previousColor) => {
+    const el = document.querySelector('[data-testid="balance-difference"]')
+    return !!el && getComputedStyle(el).color !== previousColor
+  }, colorInLight)
+  const colorInDark = await balanceDifference.evaluate((el) => getComputedStyle(el).color)
+  assert(
+    colorInDark !== colorInLight,
+    'switching the OS color scheme to dark should re-render immediately, with no toggle to click',
+  )
+  console.log(
+    '✓ App followed the system color scheme to dark live, with no manual toggle',
+  )
 
   // --- Month deletion with confirmation ---
   await page.getByLabel(`Удалить ${newMonthName}`, { exact: true }).click()
@@ -132,12 +152,16 @@ try {
     offlineBody.includes('Ипотека'),
     'previously entered data should survive offline reload',
   )
-  assert(
-    (await page.getByLabel('Включить светлую тему').getAttribute('aria-checked')) ===
-      'true',
-    'theme choice should survive offline reload',
+  const colorAfterReload = await balanceDifference.evaluate(
+    (el) => getComputedStyle(el).color,
   )
-  console.log('✓ App works offline as an installed PWA, with data and theme intact')
+  assert(
+    colorAfterReload === colorInDark,
+    'the OS dark color scheme should still apply after an offline reload',
+  )
+  console.log(
+    '✓ App works offline as an installed PWA, with data intact and still following system theme',
+  )
 
   await context.setOffline(false)
   await context.close()
