@@ -51,6 +51,7 @@ describe('amount-entry', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     const numberField = screen.getByLabelText('Сумма, вручную') as HTMLInputElement
     expect(numberField.value).toBe('0')
+    expect(numberField.type).toBe('number')
   })
 
   it('shows the amount exactly once per row, with no separate always-visible input (Single amount display without duplication)', () => {

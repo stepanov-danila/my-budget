@@ -67,6 +67,7 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
         />
         <InputNumber
           aria-label="Сумма, вручную"
+          type="number"
           min={0}
           step={SLIDER_STEP}
           value={value}
