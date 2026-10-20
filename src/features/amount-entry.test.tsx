@@ -232,6 +232,43 @@ describe('amount-entry', () => {
     expect(getCategory().amount).toBe(4000)
   })
 
+  it('blurs the manual field on pointerdown of "+", before the click, so Safari\'s first tap still works (Increment button blurs before click)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openAmountDialog(user)
+
+    const numberField = screen.getByLabelText('Сумма, вручную')
+    numberField.focus()
+    expect(numberField).toHaveFocus()
+
+    const incrementButton = screen.getByLabelText('Увеличить сумму')
+    fireEvent.pointerDown(incrementButton)
+    expect(numberField).not.toHaveFocus()
+
+    fireEvent.click(incrementButton)
+    expect(getCategory().amount).toBe(1000)
+  })
+
+  it('blurs the manual field on pointerdown of "-", before the click, so Safari\'s first tap still works (Decrement button blurs before click)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const categoryId = getCategory().id
+    useBudgetStore.getState().setCategoryAmount('2026-08', categoryId, 5000)
+
+    await openAmountDialog(user)
+    const numberField = screen.getByLabelText('Сумма, вручную')
+    numberField.focus()
+    expect(numberField).toHaveFocus()
+
+    const decrementButton = screen.getByLabelText('Уменьшить сумму')
+    fireEvent.pointerDown(decrementButton)
+    expect(numberField).not.toHaveFocus()
+
+    fireEvent.click(decrementButton)
+    expect(getCategory().amount).toBe(4000)
+  })
+
   it('does not decrement the amount below zero (Decrement does not go below zero)', async () => {
     const user = userEvent.setup()
     render(<App />)

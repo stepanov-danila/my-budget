@@ -79,6 +79,24 @@ describe('category-management', () => {
     expect(month.categories.map((c) => c.name)).toEqual(['Ипотека'])
   })
 
+  it('blurs the name field on pointerdown of a default-category option, before the click, so Safari\'s first tap still works (Default option blurs before click)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: '+ Добавить категорию' }))
+    const nameField = screen.getByPlaceholderText('Своё название')
+    await user.type(nameField, 'Чт')
+    expect(nameField).toHaveFocus()
+
+    const option = screen.getByRole('option', { name: 'Продукты' })
+    fireEvent.pointerDown(option)
+    expect(nameField).not.toHaveFocus()
+
+    fireEvent.click(option)
+    const month = useBudgetStore.getState().months[0]
+    expect(month.categories.map((c) => c.name)).toEqual(['Продукты'])
+  })
+
   it('adds a category picked from the default list (Selecting a default category)', async () => {
     const user = userEvent.setup()
     render(<App />)

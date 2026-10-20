@@ -103,6 +103,7 @@ export function AddCategoryMenu({ monthId, type, existingNames }: AddCategoryMen
                     role="option"
                     aria-selected={false}
                     block
+                    onPointerDown={blurActiveElement}
                     onClick={() => handleSelectDefault(categoryName)}
                     style={{ textAlign: 'left' }}
                   >

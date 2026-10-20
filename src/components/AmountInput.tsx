@@ -1,6 +1,7 @@
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, InputNumber, Slider } from 'antd'
 import { useRef } from 'react'
+import { blurActiveElement } from '../lib/blurActiveElement'
 
 interface AmountInputProps {
   value: number
@@ -63,6 +64,7 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
           size="small"
           aria-label="Уменьшить сумму"
           icon={<MinusOutlined />}
+          onPointerDown={blurActiveElement}
           onClick={handleDecrement}
         />
         <InputNumber
@@ -80,6 +82,7 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
           size="small"
           aria-label="Увеличить сумму"
           icon={<PlusOutlined />}
+          onPointerDown={blurActiveElement}
           onClick={handleIncrement}
         />
       </div>
