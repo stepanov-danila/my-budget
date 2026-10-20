@@ -55,6 +55,34 @@ describe('amount-entry', () => {
     expect(numberField.inputMode).toBe('numeric')
   })
 
+  it('renders the manual field at a font size iOS Safari will not zoom in on (Manual field avoids iOS zoom-on-focus)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openAmountDialog(user)
+
+    const numberField = screen.getByLabelText('Сумма, вручную')
+    expect(Number.parseInt(getComputedStyle(numberField).fontSize, 10)).toBeGreaterThanOrEqual(
+      16,
+    )
+  })
+
+  it('blurs the manual field on pointerdown of "Готово", before the click, so Safari\'s first tap still works (Done button blurs before click)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openAmountDialog(user)
+
+    const numberField = screen.getByLabelText('Сумма, вручную')
+    numberField.focus()
+    expect(numberField).toHaveFocus()
+
+    const doneButton = screen.getByRole('button', { name: 'Готово' })
+    fireEvent.pointerDown(doneButton)
+    expect(numberField).not.toHaveFocus()
+
+    fireEvent.click(doneButton)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
   it('shows the amount exactly once per row, with no separate always-visible input (Single amount display without duplication)', () => {
     render(<App />)
 

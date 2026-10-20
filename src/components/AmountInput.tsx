@@ -73,7 +73,7 @@ export function AmountInput({ value, sliderMax, onChange }: AmountInputProps) {
           value={value}
           onChange={handleNumberChange}
           controls={false}
-          style={{ width: 88 }}
+          style={{ width: 88, fontSize: 16 }}
         />
         <Button
           shape="circle"

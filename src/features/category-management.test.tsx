@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from '../App'
@@ -49,6 +49,34 @@ describe('category-management', () => {
       type: 'expense',
     })
     expect(screen.getByText('Ипотека')).toBeInTheDocument()
+  })
+
+  it('renders the category name field at a font size iOS Safari will not zoom in on (Name field avoids iOS zoom-on-focus)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: '+ Добавить категорию' }))
+    const nameField = screen.getByPlaceholderText('Своё название')
+
+    expect(Number.parseInt(getComputedStyle(nameField).fontSize, 10)).toBeGreaterThanOrEqual(16)
+  })
+
+  it('blurs the name field on pointerdown of "Добавить", before the click, so Safari\'s first tap still works (Add button blurs before click)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: '+ Добавить категорию' }))
+    const nameField = screen.getByPlaceholderText('Своё название')
+    await user.type(nameField, 'Ипотека')
+    expect(nameField).toHaveFocus()
+
+    const addButton = screen.getByRole('button', { name: 'Добавить' })
+    fireEvent.pointerDown(addButton)
+    expect(nameField).not.toHaveFocus()
+
+    fireEvent.click(addButton)
+    const month = useBudgetStore.getState().months[0]
+    expect(month.categories.map((c) => c.name)).toEqual(['Ипотека'])
   })
 
   it('adds a category picked from the default list (Selecting a default category)', async () => {

@@ -4,6 +4,7 @@ import {
   DEFAULT_EXPENSE_CATEGORIES,
   DEFAULT_INCOME_CATEGORIES,
 } from '../constants/categories'
+import { blurActiveElement } from '../lib/blurActiveElement'
 import { useBudgetStore } from '../store/useBudgetStore'
 import type { CategoryType } from '../types'
 
@@ -77,8 +78,9 @@ export function AddCategoryMenu({ monthId, type, existingNames }: AddCategoryMen
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="Своё название"
+            styles={{ input: { fontSize: 16 } }}
           />
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" onPointerDown={blurActiveElement}>
             Добавить
           </Button>
         </form>

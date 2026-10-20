@@ -1,5 +1,6 @@
 import { Button, Modal } from 'antd'
 import { AmountInput } from './AmountInput'
+import { blurActiveElement } from '../lib/blurActiveElement'
 
 interface AmountEditDialogProps {
   categoryName: string
@@ -23,7 +24,13 @@ export function AmountEditDialog({
       centered
       onCancel={onClose}
       footer={
-        <Button type="primary" block size="large" onClick={onClose}>
+        <Button
+          type="primary"
+          block
+          size="large"
+          onPointerDown={blurActiveElement}
+          onClick={onClose}
+        >
           Готово
         </Button>
       }
